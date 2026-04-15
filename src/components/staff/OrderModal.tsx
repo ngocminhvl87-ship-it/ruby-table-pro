@@ -7,8 +7,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw } from "lucide-react";
+import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import InvoicePreview from "@/components/shared/InvoicePreview";
 
 interface Category {
   id: string;
@@ -35,7 +36,7 @@ interface OrderItem {
 
 interface OrderModalProps {
   table: { id: string; table_number: number; status: string };
-  order?: { id: string; total_amount: number; status: string };
+  order?: { id: string; total_amount: number; status: string; created_at?: string };
   onClose: () => void;
   onRefresh: () => void;
 }
@@ -47,6 +48,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [cart, setCart] = useState<Record<string, number>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showInvoice, setShowInvoice] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -181,6 +183,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const filteredItems = menuItems.filter((m) => m.category_id === selectedCategory);
 
   return (
+    <>
     <Dialog open onOpenChange={() => onClose()}>
       <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] p-0 gap-0 overflow-hidden">
         <DialogHeader className="p-4 pb-2">
@@ -307,6 +310,12 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                     Thanh toán
                   </Button>
                 )}
+                {order && orderItems.length > 0 && (
+                  <Button onClick={() => setShowInvoice(true)} variant="outline" className="w-full font-bold" size="sm">
+                    <FileText className="h-3 w-3 mr-1" />
+                    In hoá đơn
+                  </Button>
+                )}
                 {table.status === "paid" && (
                   <Button onClick={handleResetTable} disabled={isSubmitting} variant="outline" className="w-full font-bold" size="sm">
                     <RotateCcw className="h-3 w-3 mr-1" />
@@ -319,5 +328,23 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
         </div>
       </DialogContent>
     </Dialog>
+
+    {showInvoice && order && (
+      <InvoicePreview
+        open={showInvoice}
+        onClose={() => setShowInvoice(false)}
+        tableNumber={table.table_number}
+        staffName={user?.email || "N/A"}
+        createdAt={order.created_at || new Date().toISOString()}
+        items={orderItems.map((item) => ({
+          name: (item as any).menu_items?.name || "—",
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          subtotal: item.subtotal,
+        }))}
+        totalAmount={order.total_amount}
+      />
+    )}
+    </>
   );
 }

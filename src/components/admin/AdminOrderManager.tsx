@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Trash2, RotateCcw, Eye } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import InvoicePreview from "@/components/shared/InvoicePreview";
 
 export default function AdminOrderManager() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -123,25 +123,20 @@ export default function AdminOrderManager() {
       </CardContent>
 
       {selectedOrder && (
-        <Dialog open onOpenChange={() => setSelectedOrder(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Chi tiết hoá đơn - Bàn #{selectedOrder.tables?.table_number}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-2">
-              {orderItems.map((item) => (
-                <div key={item.id} className="flex justify-between text-sm">
-                  <span>{item.menu_items?.name} x{item.quantity}</span>
-                  <span className="font-medium">{formatVND(item.subtotal)}</span>
-                </div>
-              ))}
-              <div className="border-t pt-2 flex justify-between font-bold">
-                <span>Tổng cộng</span>
-                <span>{formatVND(selectedOrder.total_amount)}</span>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <InvoicePreview
+          open={!!selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          tableNumber={selectedOrder.tables?.table_number || 0}
+          staffName={selectedOrder.profiles?.username || "N/A"}
+          createdAt={selectedOrder.created_at}
+          items={orderItems.map((item: any) => ({
+            name: item.menu_items?.name || "—",
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            subtotal: item.subtotal,
+          }))}
+          totalAmount={selectedOrder.total_amount}
+        />
       )}
     </Card>
   );
