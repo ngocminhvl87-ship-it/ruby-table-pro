@@ -182,7 +182,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
   return (
     <Dialog open onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0 gap-0">
+      <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] p-0 gap-0 overflow-hidden">
         <DialogHeader className="p-4 pb-2">
           <DialogTitle className="flex items-center gap-2">
             <span className="text-xl">Bàn #{table.table_number}</span>
@@ -192,9 +192,9 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col md:flex-row h-[70vh]">
+        <div className="flex flex-col md:flex-row overflow-hidden" style={{ height: "calc(90vh - 80px)" }}>
           {/* Menu Section */}
-          <div className="flex-1 flex flex-col border-r">
+          <div className="flex-1 min-w-0 flex flex-col border-r">
             {/* Category tabs */}
             <div className="flex gap-1 p-2 overflow-x-auto border-b flex-shrink-0">
               {categories.map((cat) => (
@@ -233,7 +233,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           </div>
 
           {/* Cart Section */}
-          <div className="w-full md:w-72 flex flex-col bg-muted/30">
+          <div className="w-full md:w-80 md:min-w-[320px] flex flex-col bg-muted/30 flex-shrink-0">
             <div className="p-3 border-b">
               <div className="flex items-center gap-2 font-bold text-sm">
                 <ShoppingCart className="h-4 w-4" />
