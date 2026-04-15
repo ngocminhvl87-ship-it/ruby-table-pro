@@ -192,9 +192,9 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col md:flex-row" style={{ height: "calc(90vh - 80px)" }}>
+        <div className="flex flex-col md:flex-row overflow-hidden" style={{ height: "calc(90vh - 80px)" }}>
           {/* Menu Section */}
-          <div className="flex-1 flex flex-col border-r">
+          <div className="flex-1 min-w-0 flex flex-col border-r">
             {/* Category tabs */}
             <div className="flex gap-1 p-2 overflow-x-auto border-b flex-shrink-0">
               {categories.map((cat) => (
