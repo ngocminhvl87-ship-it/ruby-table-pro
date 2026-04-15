@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
 
     if (action === "delete-user") {
       const { user_id } = payload;
-      if (user_id === user.id) {
+      if (user_id === userId) {
         return new Response(JSON.stringify({ error: "Cannot delete yourself" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
