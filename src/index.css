@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @layer base {
   :root {
@@ -45,7 +45,6 @@
     --sidebar-border: 345 60% 28%;
     --sidebar-ring: 25 95% 53%;
 
-    /* Custom tokens */
     --table-available: 210 80% 45%;
     --table-occupied: 345 80% 25%;
     --table-paid: 25 95% 53%;
