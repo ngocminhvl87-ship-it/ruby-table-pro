@@ -233,7 +233,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           </div>
 
           {/* Cart Section */}
-          <div className="w-full md:w-72 flex flex-col bg-muted/30">
+          <div className="w-full md:w-80 md:min-w-[320px] flex flex-col bg-muted/30 flex-shrink-0">
             <div className="p-3 border-b">
               <div className="flex items-center gap-2 font-bold text-sm">
                 <ShoppingCart className="h-4 w-4" />
