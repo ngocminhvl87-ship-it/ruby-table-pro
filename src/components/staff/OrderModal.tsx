@@ -36,7 +36,7 @@ interface OrderItem {
 
 interface OrderModalProps {
   table: { id: string; table_number: number; status: string };
-  order?: { id: string; total_amount: number; status: string };
+  order?: { id: string; total_amount: number; status: string; created_at?: string };
   onClose: () => void;
   onRefresh: () => void;
 }
