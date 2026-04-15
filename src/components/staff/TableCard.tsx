@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { formatVND } from "@/lib/format";
 
 interface TableCardProps {
@@ -6,7 +7,7 @@ interface TableCardProps {
   onClick: () => void;
 }
 
-export default function TableCard({ table, order, onClick }: TableCardProps) {
+function TableCardComponent({ table, order, onClick }: TableCardProps) {
   const status = order ? (table.status === "paid" ? "paid" : "occupied") : "available";
 
   const statusLabel = {
@@ -36,3 +37,6 @@ export default function TableCard({ table, order, onClick }: TableCardProps) {
     </button>
   );
 }
+
+const TableCard = memo(TableCardComponent);
+export default TableCard;
