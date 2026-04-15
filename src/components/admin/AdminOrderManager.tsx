@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatVND } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,44 +16,47 @@ export default function AdminOrderManager() {
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const { toast } = useToast();
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     const { data } = await supabase
       .from("orders")
-      .select("*, tables(table_number), profiles:staff_id(username)")
+      .select("*, tables(table_number), profiles!orders_staff_id_fkey(username)")
       .order("created_at", { ascending: false });
     if (data) setOrders(data);
-  };
+  }, []);
 
-  useEffect(() => { fetchOrders(); }, []);
+  useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
-  const softDeleteOrder = async (id: string) => {
+  const softDeleteOrder = useCallback(async (id: string) => {
     await supabase.from("orders").update({ is_deleted: true, status: "deleted" }).eq("id", id);
     toast({ title: "🗑️ Đã xoá (soft delete)" });
     fetchOrders();
-  };
+  }, [fetchOrders, toast]);
 
-  const restoreOrder = async (id: string) => {
+  const restoreOrder = useCallback(async (id: string) => {
     await supabase.from("orders").update({ is_deleted: false, status: "open" }).eq("id", id);
     toast({ title: "✅ Đã khôi phục" });
     fetchOrders();
-  };
+  }, [fetchOrders, toast]);
 
-  const cancelOrder = async (id: string) => {
+  const cancelOrder = useCallback(async (id: string) => {
     await supabase.from("orders").update({ status: "cancelled" }).eq("id", id);
     toast({ title: "❌ Đã huỷ order" });
     fetchOrders();
-  };
+  }, [fetchOrders, toast]);
 
-  const viewOrderDetails = async (order: any) => {
+  const viewOrderDetails = useCallback(async (order: any) => {
     setSelectedOrder(order);
     const { data } = await supabase
       .from("order_items")
       .select("*, menu_items(name)")
       .eq("order_id", order.id);
     if (data) setOrderItems(data);
-  };
+  }, []);
 
-  const filteredOrders = showDeleted ? orders : orders.filter((o) => !o.is_deleted);
+  const filteredOrders = useMemo(
+    () => showDeleted ? orders : orders.filter((o) => !o.is_deleted),
+    [orders, showDeleted]
+  );
 
   const statusBadge = (status: string) => {
     const variants: Record<string, any> = {
@@ -94,8 +97,8 @@ export default function AdminOrderManager() {
           <TableBody>
             {filteredOrders.map((o) => (
               <TableRow key={o.id} className={o.is_deleted ? "opacity-50" : ""}>
-                <TableCell>#{(o as any).tables?.table_number}</TableCell>
-                <TableCell>{(o as any).profiles?.username || "-"}</TableCell>
+                <TableCell>#{o.tables?.table_number}</TableCell>
+                <TableCell>{o.profiles?.username || "-"}</TableCell>
                 <TableCell>{statusBadge(o.status)}</TableCell>
                 <TableCell className="font-medium">{formatVND(o.total_amount)}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">
@@ -128,7 +131,7 @@ export default function AdminOrderManager() {
             <div className="space-y-2">
               {orderItems.map((item) => (
                 <div key={item.id} className="flex justify-between text-sm">
-                  <span>{(item as any).menu_items?.name} x{item.quantity}</span>
+                  <span>{item.menu_items?.name} x{item.quantity}</span>
                   <span className="font-medium">{formatVND(item.subtotal)}</span>
                 </div>
               ))}
