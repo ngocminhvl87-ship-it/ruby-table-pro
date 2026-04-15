@@ -21,16 +21,20 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Verify caller is admin
-    const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+    // Verify caller via JWT claims
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: { user }, error: userError } = await userClient.auth.getUser();
-    if (userError || !user) {
+    
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const userId = claimsData.claims.sub;
 
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
     
@@ -38,7 +42,7 @@ Deno.serve(async (req) => {
     const { data: roleData } = await adminClient
       .from("user_roles")
       .select("role")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("role", "admin")
       .single();
 
@@ -106,7 +110,7 @@ Deno.serve(async (req) => {
 
     if (action === "delete-user") {
       const { user_id } = payload;
-      if (user_id === user.id) {
+      if (user_id === userId) {
         return new Response(JSON.stringify({ error: "Cannot delete yourself" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
