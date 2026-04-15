@@ -183,6 +183,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const filteredItems = menuItems.filter((m) => m.category_id === selectedCategory);
 
   return (
+    <>
     <Dialog open onOpenChange={() => onClose()}>
       <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] p-0 gap-0 overflow-hidden">
         <DialogHeader className="p-4 pb-2">
