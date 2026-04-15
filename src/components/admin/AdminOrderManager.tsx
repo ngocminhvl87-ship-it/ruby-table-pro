@@ -123,25 +123,20 @@ export default function AdminOrderManager() {
       </CardContent>
 
       {selectedOrder && (
-        <Dialog open onOpenChange={() => setSelectedOrder(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Chi tiết hoá đơn - Bàn #{selectedOrder.tables?.table_number}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-2">
-              {orderItems.map((item) => (
-                <div key={item.id} className="flex justify-between text-sm">
-                  <span>{item.menu_items?.name} x{item.quantity}</span>
-                  <span className="font-medium">{formatVND(item.subtotal)}</span>
-                </div>
-              ))}
-              <div className="border-t pt-2 flex justify-between font-bold">
-                <span>Tổng cộng</span>
-                <span>{formatVND(selectedOrder.total_amount)}</span>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <InvoicePreview
+          open={!!selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          tableNumber={selectedOrder.tables?.table_number || 0}
+          staffName={selectedOrder.profiles?.username || "N/A"}
+          createdAt={selectedOrder.created_at}
+          items={orderItems.map((item: any) => ({
+            name: item.menu_items?.name || "—",
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            subtotal: item.subtotal,
+          }))}
+          totalAmount={selectedOrder.total_amount}
+        />
       )}
     </Card>
   );
