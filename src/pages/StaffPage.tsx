@@ -17,6 +17,7 @@ interface Order {
   table_id: string;
   status: string;
   total_amount: number;
+  created_at: string;
 }
 
 export default function StaffPage() {

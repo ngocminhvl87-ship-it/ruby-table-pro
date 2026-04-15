@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Trash2, RotateCcw, Eye } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import InvoicePreview from "@/components/shared/InvoicePreview";
 
 export default function AdminOrderManager() {
   const [orders, setOrders] = useState<any[]>([]);
