@@ -49,6 +49,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const [cart, setCart] = useState<Record<string, number>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
+  const [showSwapDialog, setShowSwapDialog] = useState(false);
+  const [availableTables, setAvailableTables] = useState<{ id: string; table_number: number }[]>([]);
   const { user } = useAuth();
   const { toast } = useToast();
 
