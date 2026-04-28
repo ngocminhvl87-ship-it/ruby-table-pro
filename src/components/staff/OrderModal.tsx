@@ -389,6 +389,39 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
         totalAmount={order.total_amount}
       />
     )}
+
+    {showSwapDialog && (
+      <Dialog open onOpenChange={() => setShowSwapDialog(false)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ArrowRightLeft className="h-5 w-5" />
+              Đổi bàn từ #{table.table_number}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Chọn bàn trống để chuyển order sang:</p>
+            {availableTables.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground text-sm">Không có bàn trống nào</div>
+            ) : (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[50vh] overflow-y-auto">
+                {availableTables.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => handleSwapTable(t.id, t.table_number)}
+                    disabled={isSubmitting}
+                    className="table-card-available rounded-lg p-3 font-bold text-sm hover:scale-105 active:scale-95 transition-transform disabled:opacity-50"
+                  >
+                    #{t.table_number}
+                    <div className="text-xs opacity-80 font-normal">Trống</div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    )}
     </>
   );
 }
