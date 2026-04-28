@@ -83,43 +83,45 @@ export default function AdminOrderManager() {
         </Button>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Bàn</TableHead>
-              <TableHead>NV</TableHead>
-              <TableHead>Trạng thái</TableHead>
-              <TableHead>Tổng</TableHead>
-              <TableHead>Thời gian</TableHead>
-              <TableHead className="text-right">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredOrders.map((o) => (
-              <TableRow key={o.id} className={o.is_deleted ? "opacity-50" : ""}>
-                <TableCell>#{o.tables?.table_number}</TableCell>
-                <TableCell>{o.profiles?.username || "-"}</TableCell>
-                <TableCell>{statusBadge(o.status)}</TableCell>
-                <TableCell className="font-medium">{formatVND(o.total_amount)}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">
-                  {new Date(o.created_at).toLocaleString("vi-VN")}
-                </TableCell>
-                <TableCell className="text-right space-x-1">
-                  <Button variant="ghost" size="icon" onClick={() => viewOrderDetails(o)}><Eye className="h-3.5 w-3.5" /></Button>
-                  {o.status === "open" && (
-                    <Button variant="ghost" size="icon" onClick={() => cancelOrder(o.id)} className="text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
-                  )}
-                  {!o.is_deleted && o.status !== "open" && (
-                    <Button variant="ghost" size="icon" onClick={() => softDeleteOrder(o.id)} className="text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
-                  )}
-                  {o.is_deleted && (
-                    <Button variant="ghost" size="icon" onClick={() => restoreOrder(o.id)} className="text-accent"><RotateCcw className="h-3.5 w-3.5" /></Button>
-                  )}
-                </TableCell>
+        <div className="overflow-x-auto -mx-6 px-6">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Bàn</TableHead>
+                <TableHead>NV</TableHead>
+                <TableHead>Trạng thái</TableHead>
+                <TableHead>Tổng</TableHead>
+                <TableHead className="hidden sm:table-cell">Thời gian</TableHead>
+                <TableHead className="text-right">Thao tác</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredOrders.map((o) => (
+                <TableRow key={o.id} className={o.is_deleted ? "opacity-50" : ""}>
+                  <TableCell>#{o.tables?.table_number}</TableCell>
+                  <TableCell className="max-w-[100px] truncate">{o.profiles?.username || "-"}</TableCell>
+                  <TableCell>{statusBadge(o.status)}</TableCell>
+                  <TableCell className="font-medium whitespace-nowrap">{formatVND(o.total_amount)}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground hidden sm:table-cell whitespace-nowrap">
+                    {new Date(o.created_at).toLocaleString("vi-VN")}
+                  </TableCell>
+                  <TableCell className="text-right space-x-1 whitespace-nowrap">
+                    <Button variant="ghost" size="icon" onClick={() => viewOrderDetails(o)}><Eye className="h-3.5 w-3.5" /></Button>
+                    {o.status === "open" && (
+                      <Button variant="ghost" size="icon" onClick={() => cancelOrder(o.id)} className="text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
+                    )}
+                    {!o.is_deleted && o.status !== "open" && (
+                      <Button variant="ghost" size="icon" onClick={() => softDeleteOrder(o.id)} className="text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
+                    )}
+                    {o.is_deleted && (
+                      <Button variant="ghost" size="icon" onClick={() => restoreOrder(o.id)} className="text-accent"><RotateCcw className="h-3.5 w-3.5" /></Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
 
       {selectedOrder && (
