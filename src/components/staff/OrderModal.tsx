@@ -63,6 +63,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const [showSwapDialog, setShowSwapDialog] = useState(false);
   const [availableTables, setAvailableTables] = useState<{ id: string; table_number: number }[]>([]);
   const [pendingSwap, setPendingSwap] = useState<{ id: string; table_number: number } | null>(null);
+  const [swapItem, setSwapItem] = useState<OrderItem | null>(null);
+  const [deleteItem, setDeleteItem] = useState<OrderItem | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
