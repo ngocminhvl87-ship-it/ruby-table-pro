@@ -332,18 +332,18 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
             {/* Menu items */}
             <ScrollArea className="flex-1 p-2">
-              <div className="grid grid-cols-1 gap-1.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                 {filteredItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => addToCart(item.id)}
-                    className="flex items-center justify-between p-2.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-left group"
+                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted active:scale-95 transition text-left group min-h-[52px]"
                   >
-                    <div>
-                      <div className="font-medium text-sm">{item.name}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-sm truncate">{item.name}</div>
                       <div className="text-xs text-muted-foreground">{formatVND(item.price)}</div>
                     </div>
-                    <Plus className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <Plus className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
                   </button>
                 ))}
               </div>
