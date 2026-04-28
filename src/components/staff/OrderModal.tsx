@@ -17,7 +17,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw, FileText, ArrowRightLeft, Trash2, Replace } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import InvoicePreview from "@/components/shared/InvoicePreview";
@@ -300,17 +300,17 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   return (
     <>
     <Dialog open onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] p-0 gap-0 overflow-hidden">
-        <DialogHeader className="p-4 pb-2">
-          <DialogTitle className="flex items-center gap-2">
-            <span className="text-xl">Bàn #{table.table_number}</span>
+      <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <DialogHeader className="p-3 sm:p-4 pb-2">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <span className="text-lg sm:text-xl">Bàn #{table.table_number}</span>
             <Badge variant={order ? "destructive" : "secondary"}>
               {order ? "Đang dùng" : "Trống"}
             </Badge>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col md:flex-row overflow-hidden" style={{ height: "calc(90vh - 80px)" }}>
+        <div className="flex flex-col md:flex-row overflow-hidden flex-1 min-h-0 h-[calc(100dvh-60px)] sm:h-[calc(90vh-80px)]">
           {/* Menu Section */}
           <div className="flex-1 min-w-0 flex flex-col border-r">
             {/* Category tabs */}
@@ -351,7 +351,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           </div>
 
           {/* Cart Section */}
-          <div className="w-full md:w-80 md:min-w-[320px] flex flex-col bg-muted/30 flex-shrink-0">
+          <div className="w-full md:w-80 md:min-w-[320px] flex flex-col bg-muted/30 flex-shrink-0 border-t md:border-t-0 max-h-[45vh] md:max-h-none">
             <div className="p-3 border-b">
               <div className="flex items-center gap-2 font-bold text-sm">
                 <ShoppingCart className="h-4 w-4" />
