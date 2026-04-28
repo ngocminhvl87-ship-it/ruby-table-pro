@@ -360,14 +360,47 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
             </div>
 
             <ScrollArea className="flex-1 p-2">
-              {/* Existing items */}
+              {/* Existing items - editable */}
               {orderItems.map((item) => (
-                <div key={item.id} className="flex justify-between py-1.5 text-xs">
-                  <span>{(item as any).menu_items?.name} x{item.quantity}</span>
-                  <span className="font-medium">{formatVND(item.subtotal)}</span>
+                <div key={item.id} className="flex items-center justify-between gap-1 py-1.5 border-b border-border/30 last:border-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-medium truncate">{item.menu_items?.name}</div>
+                    <div className="text-[10px] text-muted-foreground">{formatVND(item.subtotal)}</div>
+                  </div>
+                  <div className="flex items-center gap-0.5">
+                    <button
+                      onClick={() => updateOrderItemQty(item, -1)}
+                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                      title="Giảm"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </button>
+                    <span className="text-xs font-bold w-5 text-center">{item.quantity}</span>
+                    <button
+                      onClick={() => updateOrderItemQty(item, 1)}
+                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
+                      title="Tăng"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </button>
+                    <button
+                      onClick={() => setSwapItem(item)}
+                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground transition-colors ml-0.5"
+                      title="Đổi món"
+                    >
+                      <Replace className="h-3 w-3" />
+                    </button>
+                    <button
+                      onClick={() => setDeleteItem(item)}
+                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                      title="Xoá"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
                 </div>
               ))}
-              
+
               {orderItems.length > 0 && cartItems.length > 0 && (
                 <Separator className="my-2" />
               )}
