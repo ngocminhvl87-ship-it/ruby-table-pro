@@ -4,6 +4,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import { formatVND } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +61,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const [showInvoice, setShowInvoice] = useState(false);
   const [showSwapDialog, setShowSwapDialog] = useState(false);
   const [availableTables, setAvailableTables] = useState<{ id: string; table_number: number }[]>([]);
+  const [pendingSwap, setPendingSwap] = useState<{ id: string; table_number: number } | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -408,7 +419,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                 {availableTables.map((t) => (
                   <button
                     key={t.id}
-                    onClick={() => handleSwapTable(t.id, t.table_number)}
+                    onClick={() => setPendingSwap(t)}
                     disabled={isSubmitting}
                     className="table-card-available rounded-lg p-3 font-bold text-sm hover:scale-105 active:scale-95 transition-transform disabled:opacity-50"
                   >
@@ -422,6 +433,35 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
         </DialogContent>
       </Dialog>
     )}
+
+    <AlertDialog open={!!pendingSwap} onOpenChange={(o) => !o && setPendingSwap(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>⚠️ Xác nhận đổi bàn</AlertDialogTitle>
+          <AlertDialogDescription>
+            Bạn có chắc muốn chuyển toàn bộ order từ <strong>Bàn #{table.table_number}</strong> sang{" "}
+            <strong>Bàn #{pendingSwap?.table_number}</strong>?
+            <br />
+            Bàn #{table.table_number} sẽ trở thành <strong>Trống</strong>.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isSubmitting}>Huỷ</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={isSubmitting}
+            onClick={async () => {
+              if (pendingSwap) {
+                const target = pendingSwap;
+                setPendingSwap(null);
+                await handleSwapTable(target.id, target.table_number);
+              }
+            }}
+          >
+            Đồng ý đổi
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 }
