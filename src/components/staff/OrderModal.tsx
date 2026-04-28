@@ -433,6 +433,35 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
         </DialogContent>
       </Dialog>
     )}
+
+    <AlertDialog open={!!pendingSwap} onOpenChange={(o) => !o && setPendingSwap(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>⚠️ Xác nhận đổi bàn</AlertDialogTitle>
+          <AlertDialogDescription>
+            Bạn có chắc muốn chuyển toàn bộ order từ <strong>Bàn #{table.table_number}</strong> sang{" "}
+            <strong>Bàn #{pendingSwap?.table_number}</strong>?
+            <br />
+            Bàn #{table.table_number} sẽ trở thành <strong>Trống</strong>.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isSubmitting}>Huỷ</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={isSubmitting}
+            onClick={async () => {
+              if (pendingSwap) {
+                const target = pendingSwap;
+                setPendingSwap(null);
+                await handleSwapTable(target.id, target.table_number);
+              }
+            }}
+          >
+            Đồng ý đổi
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 }
