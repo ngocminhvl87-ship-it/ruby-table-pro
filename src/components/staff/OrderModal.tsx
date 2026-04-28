@@ -362,40 +362,40 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
             <ScrollArea className="flex-1 p-2">
               {/* Existing items - editable */}
               {orderItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between gap-1 py-1.5 border-b border-border/30 last:border-0">
+                <div key={item.id} className="flex items-center justify-between gap-1 py-2 border-b border-border/30 last:border-0">
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-medium truncate">{item.menu_items?.name}</div>
-                    <div className="text-[10px] text-muted-foreground">{formatVND(item.subtotal)}</div>
+                    <div className="text-xs sm:text-sm font-medium truncate">{item.menu_items?.name}</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground">{formatVND(item.subtotal)}</div>
                   </div>
-                  <div className="flex items-center gap-0.5">
+                  <div className="flex items-center gap-1">
                     <button
                       onClick={() => updateOrderItemQty(item, -1)}
-                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition"
                       title="Giảm"
                     >
-                      <Minus className="h-3 w-3" />
+                      <Minus className="h-3.5 w-3.5" />
                     </button>
-                    <span className="text-xs font-bold w-5 text-center">{item.quantity}</span>
+                    <span className="text-xs sm:text-sm font-bold w-6 text-center">{item.quantity}</span>
                     <button
                       onClick={() => updateOrderItemQty(item, 1)}
-                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
+                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition"
                       title="Tăng"
                     >
-                      <Plus className="h-3 w-3" />
+                      <Plus className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => setSwapItem(item)}
-                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground transition-colors ml-0.5"
+                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground active:scale-95 transition ml-0.5"
                       title="Đổi món"
                     >
-                      <Replace className="h-3 w-3" />
+                      <Replace className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => setDeleteItem(item)}
-                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition"
                       title="Xoá"
                     >
-                      <Trash2 className="h-3 w-3" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 </div>
@@ -407,18 +407,18 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
               {/* New items in cart */}
               {cartItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between py-1.5">
-                  <div className="text-xs flex-1">
-                    <span className="font-medium">{item.name}</span>
-                    <span className="text-muted-foreground ml-1">{formatVND(item.price)}</span>
+                <div key={item.id} className="flex items-center justify-between py-2">
+                  <div className="text-xs sm:text-sm flex-1 min-w-0">
+                    <div className="font-medium truncate">{item.name}</div>
+                    <span className="text-muted-foreground text-[10px] sm:text-xs">{formatVND(item.price)}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => removeFromCart(item.id)} className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors">
-                      <Minus className="h-3 w-3" />
+                    <button onClick={() => removeFromCart(item.id)} className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition">
+                      <Minus className="h-3.5 w-3.5" />
                     </button>
-                    <span className="text-xs font-bold w-5 text-center">{item.quantity}</span>
-                    <button onClick={() => addToCart(item.id)} className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
-                      <Plus className="h-3 w-3" />
+                    <span className="text-xs sm:text-sm font-bold w-6 text-center">{item.quantity}</span>
+                    <button onClick={() => addToCart(item.id)} className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition">
+                      <Plus className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 </div>
@@ -584,8 +584,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               <SelectTrigger><SelectValue placeholder="Chọn món mới" /></SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
-                  <div key={cat.id}>
-                    <div className="px-2 py-1 text-xs font-bold text-muted-foreground">{cat.name}</div>
+                  <SelectGroup key={cat.id}>
+                    <SelectLabel className="text-xs">{cat.name}</SelectLabel>
                     {menuItems
                       .filter((m) => m.category_id === cat.id)
                       .map((m) => (
@@ -593,7 +593,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                           {m.name} — {formatVND(m.price)}
                         </SelectItem>
                       ))}
-                  </div>
+                  </SelectGroup>
                 ))}
               </SelectContent>
             </Select>
