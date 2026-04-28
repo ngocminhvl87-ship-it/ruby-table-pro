@@ -80,18 +80,73 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     fetchMenu();
   }, []);
 
+  const refreshOrderItems = async () => {
+    if (!order) return;
+    const { data } = await supabase
+      .from("order_items")
+      .select("*, menu_items(name)")
+      .eq("order_id", order.id);
+    if (data) setOrderItems(data as any);
+  };
+
   useEffect(() => {
-    if (order) {
-      const fetchOrderItems = async () => {
-        const { data } = await supabase
+    refreshOrderItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order?.id]);
+
+  const updateOrderItemQty = async (item: OrderItem, delta: number) => {
+    const newQty = item.quantity + delta;
+    try {
+      if (newQty <= 0) {
+        const { error } = await supabase.from("order_items").delete().eq("id", item.id);
+        if (error) throw error;
+        toast({ title: "🗑️ Đã xoá", description: `${item.menu_items?.name} khỏi order` });
+      } else {
+        const { error } = await supabase
           .from("order_items")
-          .select("*, menu_items(name)")
-          .eq("order_id", order.id);
-        if (data) setOrderItems(data as any);
-      };
-      fetchOrderItems();
+          .update({ quantity: newQty, subtotal: item.unit_price * newQty })
+          .eq("id", item.id);
+        if (error) throw error;
+      }
+      await refreshOrderItems();
+      onRefresh();
+    } catch (error: any) {
+      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
     }
-  }, [order]);
+  };
+
+  const deleteOrderItem = async (item: OrderItem) => {
+    try {
+      const { error } = await supabase.from("order_items").delete().eq("id", item.id);
+      if (error) throw error;
+      toast({ title: "🗑️ Đã xoá", description: `${item.menu_items?.name}` });
+      await refreshOrderItems();
+      onRefresh();
+    } catch (error: any) {
+      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const swapOrderItem = async (item: OrderItem, newMenuItemId: string) => {
+    const newMenu = menuItems.find((m) => m.id === newMenuItemId);
+    if (!newMenu) return;
+    try {
+      const { error } = await supabase
+        .from("order_items")
+        .update({
+          menu_item_id: newMenu.id,
+          unit_price: newMenu.price,
+          subtotal: newMenu.price * item.quantity,
+        })
+        .eq("id", item.id);
+      if (error) throw error;
+      toast({ title: "🔁 Đã đổi món", description: `→ ${newMenu.name}` });
+      await refreshOrderItems();
+      onRefresh();
+    } catch (error: any) {
+      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
+    }
+  };
 
   const addToCart = (itemId: string) => {
     setCart((prev) => ({ ...prev, [itemId]: (prev[itemId] || 0) + 1 }));
