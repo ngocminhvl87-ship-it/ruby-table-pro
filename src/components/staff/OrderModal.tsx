@@ -17,7 +17,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw, FileText, ArrowRightLeft } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw, FileText, ArrowRightLeft, Trash2, Replace } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import InvoicePreview from "@/components/shared/InvoicePreview";
 
@@ -62,6 +63,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const [showSwapDialog, setShowSwapDialog] = useState(false);
   const [availableTables, setAvailableTables] = useState<{ id: string; table_number: number }[]>([]);
   const [pendingSwap, setPendingSwap] = useState<{ id: string; table_number: number } | null>(null);
+  const [swapItem, setSwapItem] = useState<OrderItem | null>(null);
+  const [deleteItem, setDeleteItem] = useState<OrderItem | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -80,18 +83,73 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     fetchMenu();
   }, []);
 
+  const refreshOrderItems = async () => {
+    if (!order) return;
+    const { data } = await supabase
+      .from("order_items")
+      .select("*, menu_items(name)")
+      .eq("order_id", order.id);
+    if (data) setOrderItems(data as any);
+  };
+
   useEffect(() => {
-    if (order) {
-      const fetchOrderItems = async () => {
-        const { data } = await supabase
+    refreshOrderItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order?.id]);
+
+  const updateOrderItemQty = async (item: OrderItem, delta: number) => {
+    const newQty = item.quantity + delta;
+    try {
+      if (newQty <= 0) {
+        const { error } = await supabase.from("order_items").delete().eq("id", item.id);
+        if (error) throw error;
+        toast({ title: "🗑️ Đã xoá", description: `${item.menu_items?.name} khỏi order` });
+      } else {
+        const { error } = await supabase
           .from("order_items")
-          .select("*, menu_items(name)")
-          .eq("order_id", order.id);
-        if (data) setOrderItems(data as any);
-      };
-      fetchOrderItems();
+          .update({ quantity: newQty, subtotal: item.unit_price * newQty })
+          .eq("id", item.id);
+        if (error) throw error;
+      }
+      await refreshOrderItems();
+      onRefresh();
+    } catch (error: any) {
+      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
     }
-  }, [order]);
+  };
+
+  const deleteOrderItem = async (item: OrderItem) => {
+    try {
+      const { error } = await supabase.from("order_items").delete().eq("id", item.id);
+      if (error) throw error;
+      toast({ title: "🗑️ Đã xoá", description: `${item.menu_items?.name}` });
+      await refreshOrderItems();
+      onRefresh();
+    } catch (error: any) {
+      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const swapOrderItem = async (item: OrderItem, newMenuItemId: string) => {
+    const newMenu = menuItems.find((m) => m.id === newMenuItemId);
+    if (!newMenu) return;
+    try {
+      const { error } = await supabase
+        .from("order_items")
+        .update({
+          menu_item_id: newMenu.id,
+          unit_price: newMenu.price,
+          subtotal: newMenu.price * item.quantity,
+        })
+        .eq("id", item.id);
+      if (error) throw error;
+      toast({ title: "🔁 Đã đổi món", description: `→ ${newMenu.name}` });
+      await refreshOrderItems();
+      onRefresh();
+    } catch (error: any) {
+      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
+    }
+  };
 
   const addToCart = (itemId: string) => {
     setCart((prev) => ({ ...prev, [itemId]: (prev[itemId] || 0) + 1 }));
@@ -302,14 +360,47 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
             </div>
 
             <ScrollArea className="flex-1 p-2">
-              {/* Existing items */}
+              {/* Existing items - editable */}
               {orderItems.map((item) => (
-                <div key={item.id} className="flex justify-between py-1.5 text-xs">
-                  <span>{(item as any).menu_items?.name} x{item.quantity}</span>
-                  <span className="font-medium">{formatVND(item.subtotal)}</span>
+                <div key={item.id} className="flex items-center justify-between gap-1 py-1.5 border-b border-border/30 last:border-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-medium truncate">{item.menu_items?.name}</div>
+                    <div className="text-[10px] text-muted-foreground">{formatVND(item.subtotal)}</div>
+                  </div>
+                  <div className="flex items-center gap-0.5">
+                    <button
+                      onClick={() => updateOrderItemQty(item, -1)}
+                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                      title="Giảm"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </button>
+                    <span className="text-xs font-bold w-5 text-center">{item.quantity}</span>
+                    <button
+                      onClick={() => updateOrderItemQty(item, 1)}
+                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
+                      title="Tăng"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </button>
+                    <button
+                      onClick={() => setSwapItem(item)}
+                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground transition-colors ml-0.5"
+                      title="Đổi món"
+                    >
+                      <Replace className="h-3 w-3" />
+                    </button>
+                    <button
+                      onClick={() => setDeleteItem(item)}
+                      className="h-5 w-5 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                      title="Xoá"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
                 </div>
               ))}
-              
+
               {orderItems.length > 0 && cartItems.length > 0 && (
                 <Separator className="my-2" />
               )}
@@ -466,6 +557,71 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
             }}
           >
             Đồng ý đổi
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    {swapItem && (
+      <Dialog open onOpenChange={() => setSwapItem(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Replace className="h-4 w-4" /> Đổi món
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="text-sm">
+              Đổi <strong>{swapItem.menu_items?.name}</strong> (x{swapItem.quantity}) thành:
+            </div>
+            <Select
+              onValueChange={async (val) => {
+                const target = swapItem;
+                setSwapItem(null);
+                await swapOrderItem(target, val);
+              }}
+            >
+              <SelectTrigger><SelectValue placeholder="Chọn món mới" /></SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <div key={cat.id}>
+                    <div className="px-2 py-1 text-xs font-bold text-muted-foreground">{cat.name}</div>
+                    {menuItems
+                      .filter((m) => m.category_id === cat.id)
+                      .map((m) => (
+                        <SelectItem key={m.id} value={m.id}>
+                          {m.name} — {formatVND(m.price)}
+                        </SelectItem>
+                      ))}
+                  </div>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )}
+
+    <AlertDialog open={!!deleteItem} onOpenChange={(o) => !o && setDeleteItem(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>⚠️ Xoá món khỏi order?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Bạn có chắc muốn xoá <strong>{deleteItem?.menu_items?.name}</strong> (x{deleteItem?.quantity}) khỏi order này?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Huỷ</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={async () => {
+              if (deleteItem) {
+                const target = deleteItem;
+                setDeleteItem(null);
+                await deleteOrderItem(target);
+              }
+            }}
+          >
+            Xoá
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
