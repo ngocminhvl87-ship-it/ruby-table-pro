@@ -79,9 +79,9 @@ export default function AdminMenuManager() {
       <Card>
         <CardHeader><CardTitle className="text-base">Categories</CardTitle></CardHeader>
         <CardContent>
-          <div className="flex gap-2 mb-3">
-            <Input placeholder="Tên category mới (VD: TRÀ SỮA)" value={newCatName} onChange={(e) => setNewCatName(e.target.value)} className="w-60" />
-            <Button onClick={addCategory} size="sm"><Plus className="h-4 w-4 mr-1" /> Thêm</Button>
+          <div className="flex flex-col sm:flex-row gap-2 mb-3">
+            <Input placeholder="Tên category mới (VD: TRÀ SỮA)" value={newCatName} onChange={(e) => setNewCatName(e.target.value)} className="w-full sm:w-60" />
+            <Button onClick={addCategory} size="sm" className="w-full sm:w-auto"><Plus className="h-4 w-4 mr-1" /> Thêm</Button>
           </div>
           <div className="flex flex-wrap gap-2">
             {categories.map((c) => (
