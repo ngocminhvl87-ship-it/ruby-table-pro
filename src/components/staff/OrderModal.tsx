@@ -419,7 +419,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                 {availableTables.map((t) => (
                   <button
                     key={t.id}
-                    onClick={() => handleSwapTable(t.id, t.table_number)}
+                    onClick={() => setPendingSwap(t)}
                     disabled={isSubmitting}
                     className="table-card-available rounded-lg p-3 font-bold text-sm hover:scale-105 active:scale-95 transition-transform disabled:opacity-50"
                   >
