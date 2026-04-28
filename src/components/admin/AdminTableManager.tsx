@@ -86,22 +86,22 @@ export default function AdminTableManager() {
           <CardTitle>Quản lý bàn ({tables.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 mb-4">
+          <div className="flex flex-col sm:flex-row gap-2 mb-4">
             <Input
               placeholder="Số bàn mới"
               value={newTableNumber}
               onChange={(e) => setNewTableNumber(e.target.value)}
               type="number"
-              className="w-40"
+              className="w-full sm:w-40"
             />
-            <Button onClick={addTable} size="sm"><Plus className="h-4 w-4 mr-1" /> Thêm bàn</Button>
+            <Button onClick={addTable} size="sm" className="w-full sm:w-auto"><Plus className="h-4 w-4 mr-1" /> Thêm bàn</Button>
           </div>
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 gap-2">
             {tables.map((t) => (
               <button
                 key={t.id}
                 onClick={() => handleTableClick(t)}
-                className={`rounded-lg p-3 text-center font-bold text-sm cursor-pointer transition-transform hover:scale-105 ${
+                className={`rounded-lg p-3 text-center font-bold text-sm cursor-pointer transition-transform hover:scale-105 active:scale-95 min-h-[68px] ${
                   t.status === "available" ? "table-card-available" :
                   t.status === "occupied" ? "table-card-occupied" : "table-card-paid"
                 }`}

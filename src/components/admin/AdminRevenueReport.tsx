@@ -159,7 +159,7 @@ export default function AdminRevenueReport() {
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
               <ShoppingCart className="h-4 w-4" /> Đơn hàng
             </div>
-            <div className="text-xl font-bold">{stats.currentCount} <span className="text-sm text-muted-foreground font-normal">({stats.prevCount} trước)</span></div>
+            <div className="text-xl font-bold">{stats.currentCount} <span className="text-xs text-muted-foreground font-normal block sm:inline">({stats.prevCount} trước)</span></div>
           </CardContent>
         </Card>
       </div>
@@ -167,12 +167,12 @@ export default function AdminRevenueReport() {
       {/* Chart */}
       <Card>
         <CardHeader><CardTitle className="text-base">Biểu đồ doanh thu</CardTitle></CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData}>
+        <CardContent className="px-2 sm:px-6">
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={chartData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" fontSize={12} />
-              <YAxis fontSize={12} tickFormatter={(v) => `${Math.round(v / 1000)}K`} />
+              <XAxis dataKey="name" fontSize={10} />
+              <YAxis fontSize={10} tickFormatter={(v) => `${Math.round(v / 1000)}K`} width={40} />
               <Tooltip formatter={(value: number) => formatVND(value)} />
               <Bar dataKey="revenue" fill="hsl(345, 80%, 25%)" radius={[4, 4, 0, 0]} name="Doanh thu" />
             </BarChart>

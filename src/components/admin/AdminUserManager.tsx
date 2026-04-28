@@ -82,39 +82,41 @@ export default function AdminUserManager() {
         </Dialog>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Username</TableHead>
-              <TableHead>Họ tên</TableHead>
-              <TableHead>Vai trò</TableHead>
-              <TableHead className="text-right">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((u) => (
-              <TableRow key={u.id}>
-                <TableCell className="font-medium">{u.username}</TableCell>
-                <TableCell>{u.full_name || "-"}</TableCell>
-                <TableCell>
-                  <Badge variant={u.role === "admin" ? "default" : "secondary"}>
-                    {u.role === "admin" ? "Admin" : "Staff"}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right space-x-1">
-                  <Button variant="ghost" size="icon" onClick={() => changePassword(u.id)} title="Đổi mật khẩu">
-                    <Key className="h-3.5 w-3.5" />
-                  </Button>
-                  {u.role !== "admin" && (
-                    <Button variant="ghost" size="icon" onClick={() => deleteUser(u.id)} title="Xoá" className="text-destructive">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  )}
-                </TableCell>
+        <div className="overflow-x-auto -mx-6 px-6">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Username</TableHead>
+                <TableHead className="hidden sm:table-cell">Họ tên</TableHead>
+                <TableHead>Vai trò</TableHead>
+                <TableHead className="text-right">Thao tác</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {users.map((u) => (
+                <TableRow key={u.id}>
+                  <TableCell className="font-medium">{u.username}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{u.full_name || "-"}</TableCell>
+                  <TableCell>
+                    <Badge variant={u.role === "admin" ? "default" : "secondary"}>
+                      {u.role === "admin" ? "Admin" : "Staff"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right space-x-1 whitespace-nowrap">
+                    <Button variant="ghost" size="icon" onClick={() => changePassword(u.id)} title="Đổi mật khẩu">
+                      <Key className="h-3.5 w-3.5" />
+                    </Button>
+                    {u.role !== "admin" && (
+                      <Button variant="ghost" size="icon" onClick={() => deleteUser(u.id)} title="Xoá" className="text-destructive">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );

@@ -63,9 +63,9 @@ export default function StaffPage() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <main className="container py-4">
-        <h1 className="text-2xl font-bold mb-4">Quản lý bàn</h1>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+      <main className="container py-3 sm:py-4 px-3 sm:px-6">
+        <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Quản lý bàn</h1>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
           {tables.map((table) => (
             <TableCard
               key={table.id}
