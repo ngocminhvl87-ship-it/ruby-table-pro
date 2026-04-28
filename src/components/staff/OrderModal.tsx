@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw, FileText } from "lucide-react";
+import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw, FileText, ArrowRightLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import InvoicePreview from "@/components/shared/InvoicePreview";
 
