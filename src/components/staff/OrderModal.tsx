@@ -561,6 +561,71 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+
+    {swapItem && (
+      <Dialog open onOpenChange={() => setSwapItem(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Replace className="h-4 w-4" /> Đổi món
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="text-sm">
+              Đổi <strong>{swapItem.menu_items?.name}</strong> (x{swapItem.quantity}) thành:
+            </div>
+            <Select
+              onValueChange={async (val) => {
+                const target = swapItem;
+                setSwapItem(null);
+                await swapOrderItem(target, val);
+              }}
+            >
+              <SelectTrigger><SelectValue placeholder="Chọn món mới" /></SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <div key={cat.id}>
+                    <div className="px-2 py-1 text-xs font-bold text-muted-foreground">{cat.name}</div>
+                    {menuItems
+                      .filter((m) => m.category_id === cat.id)
+                      .map((m) => (
+                        <SelectItem key={m.id} value={m.id}>
+                          {m.name} — {formatVND(m.price)}
+                        </SelectItem>
+                      ))}
+                  </div>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )}
+
+    <AlertDialog open={!!deleteItem} onOpenChange={(o) => !o && setDeleteItem(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>⚠️ Xoá món khỏi order?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Bạn có chắc muốn xoá <strong>{deleteItem?.menu_items?.name}</strong> (x{deleteItem?.quantity}) khỏi order này?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Huỷ</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={async () => {
+              if (deleteItem) {
+                const target = deleteItem;
+                setDeleteItem(null);
+                await deleteOrderItem(target);
+              }
+            }}
+          >
+            Xoá
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 }
