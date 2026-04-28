@@ -182,6 +182,42 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     }
   };
 
+  const openSwapDialog = async () => {
+    const { data } = await supabase
+      .from("tables")
+      .select("id, table_number")
+      .eq("status", "available")
+      .order("table_number");
+    setAvailableTables(data || []);
+    setShowSwapDialog(true);
+  };
+
+  const handleSwapTable = async (newTableId: string, newTableNumber: number) => {
+    if (!order) return;
+    setIsSubmitting(true);
+    try {
+      // Move order to new table
+      const { error: orderErr } = await supabase
+        .from("orders")
+        .update({ table_id: newTableId })
+        .eq("id", order.id);
+      if (orderErr) throw orderErr;
+
+      // Update both tables status
+      await supabase.from("tables").update({ status: "occupied" }).eq("id", newTableId);
+      await supabase.from("tables").update({ status: "available" }).eq("id", table.id);
+
+      toast({ title: "🔀 Đổi bàn thành công", description: `Bàn #${table.table_number} → Bàn #${newTableNumber}` });
+      setShowSwapDialog(false);
+      onRefresh();
+      onClose();
+    } catch (error: any) {
+      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const filteredItems = menuItems.filter((m) => m.category_id === selectedCategory);
 
   return (
