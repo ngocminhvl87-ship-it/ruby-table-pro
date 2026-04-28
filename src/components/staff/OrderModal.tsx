@@ -206,24 +206,32 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const handleSwapTable = async (newTableId: string, newTableNumber: number) => {
     if (!order) return;
     setIsSubmitting(true);
+    const oldTableNumber = table.table_number;
+    const now = new Date();
+    const timeStr = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")} ${now.getDate().toString().padStart(2, "0")}/${(now.getMonth() + 1).toString().padStart(2, "0")}/${now.getFullYear()}`;
     try {
-      // Move order to new table
       const { error: orderErr } = await supabase
         .from("orders")
         .update({ table_id: newTableId })
         .eq("id", order.id);
       if (orderErr) throw orderErr;
 
-      // Update both tables status
       await supabase.from("tables").update({ status: "occupied" }).eq("id", newTableId);
       await supabase.from("tables").update({ status: "available" }).eq("id", table.id);
 
-      toast({ title: "🔀 Đổi bàn thành công", description: `Bàn #${table.table_number} → Bàn #${newTableNumber}` });
+      toast({
+        title: `✅ Đổi bàn thành công → Bàn #${newTableNumber}`,
+        description: `Từ Bàn #${oldTableNumber} sang Bàn #${newTableNumber} lúc ${timeStr}`,
+      });
       setShowSwapDialog(false);
       onRefresh();
       onClose();
     } catch (error: any) {
-      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
+      toast({
+        title: `❌ Đổi bàn thất bại → Bàn #${newTableNumber}`,
+        description: `${error.message} (lúc ${timeStr})`,
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
