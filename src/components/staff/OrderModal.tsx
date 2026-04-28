@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw, FileText } from "lucide-react";
+import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw, FileText, ArrowRightLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import InvoicePreview from "@/components/shared/InvoicePreview";
 
@@ -49,6 +49,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const [cart, setCart] = useState<Record<string, number>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
+  const [showSwapDialog, setShowSwapDialog] = useState(false);
+  const [availableTables, setAvailableTables] = useState<{ id: string; table_number: number }[]>([]);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -171,6 +173,42 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     try {
       await supabase.from("tables").update({ status: "available" }).eq("id", table.id);
       toast({ title: "🔄 Reset", description: `Bàn #${table.table_number} đã trống` });
+      onRefresh();
+      onClose();
+    } catch (error: any) {
+      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const openSwapDialog = async () => {
+    const { data } = await supabase
+      .from("tables")
+      .select("id, table_number")
+      .eq("status", "available")
+      .order("table_number");
+    setAvailableTables(data || []);
+    setShowSwapDialog(true);
+  };
+
+  const handleSwapTable = async (newTableId: string, newTableNumber: number) => {
+    if (!order) return;
+    setIsSubmitting(true);
+    try {
+      // Move order to new table
+      const { error: orderErr } = await supabase
+        .from("orders")
+        .update({ table_id: newTableId })
+        .eq("id", order.id);
+      if (orderErr) throw orderErr;
+
+      // Update both tables status
+      await supabase.from("tables").update({ status: "occupied" }).eq("id", newTableId);
+      await supabase.from("tables").update({ status: "available" }).eq("id", table.id);
+
+      toast({ title: "🔀 Đổi bàn thành công", description: `Bàn #${table.table_number} → Bàn #${newTableNumber}` });
+      setShowSwapDialog(false);
       onRefresh();
       onClose();
     } catch (error: any) {
@@ -310,6 +348,12 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                     Thanh toán
                   </Button>
                 )}
+                {order && order.status === "open" && (
+                  <Button onClick={openSwapDialog} disabled={isSubmitting} variant="outline" className="w-full font-bold" size="sm">
+                    <ArrowRightLeft className="h-3 w-3 mr-1" />
+                    Đổi bàn
+                  </Button>
+                )}
                 {order && orderItems.length > 0 && (
                   <Button onClick={() => setShowInvoice(true)} variant="outline" className="w-full font-bold" size="sm">
                     <FileText className="h-3 w-3 mr-1" />
@@ -344,6 +388,39 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
         }))}
         totalAmount={order.total_amount}
       />
+    )}
+
+    {showSwapDialog && (
+      <Dialog open onOpenChange={() => setShowSwapDialog(false)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ArrowRightLeft className="h-5 w-5" />
+              Đổi bàn từ #{table.table_number}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Chọn bàn trống để chuyển order sang:</p>
+            {availableTables.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground text-sm">Không có bàn trống nào</div>
+            ) : (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[50vh] overflow-y-auto">
+                {availableTables.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => handleSwapTable(t.id, t.table_number)}
+                    disabled={isSubmitting}
+                    className="table-card-available rounded-lg p-3 font-bold text-sm hover:scale-105 active:scale-95 transition-transform disabled:opacity-50"
+                  >
+                    #{t.table_number}
+                    <div className="text-xs opacity-80 font-normal">Trống</div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     )}
     </>
   );
