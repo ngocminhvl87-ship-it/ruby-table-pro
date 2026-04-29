@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatVND } from "@/lib/format";
@@ -45,6 +45,12 @@ interface OrderItem {
   menu_items?: { name: string };
 }
 
+interface SwapTable {
+  id: string;
+  table_number: number;
+  status: string;
+}
+
 interface OrderModalProps {
   table: { id: string; table_number: number; status: string };
   order?: { id: string; total_amount: number; status: string; created_at?: string };
@@ -61,8 +67,9 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
   const [showSwapDialog, setShowSwapDialog] = useState(false);
-  const [availableTables, setAvailableTables] = useState<{ id: string; table_number: number }[]>([]);
-  const [pendingSwap, setPendingSwap] = useState<{ id: string; table_number: number } | null>(null);
+  const [availableTables, setAvailableTables] = useState<SwapTable[]>([]);
+  const [isLoadingSwapTables, setIsLoadingSwapTables] = useState(false);
+  const [pendingSwap, setPendingSwap] = useState<SwapTable | null>(null);
   const [swapItem, setSwapItem] = useState<OrderItem | null>(null);
   const [deleteItem, setDeleteItem] = useState<OrderItem | null>(null);
   const { user } = useAuth();
@@ -96,6 +103,50 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     refreshOrderItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order?.id]);
+
+  const fetchAvailableSwapTables = useCallback(async () => {
+    setIsLoadingSwapTables(true);
+    try {
+      const { data, error } = await supabase
+        .from("tables")
+        .select("id, table_number, status")
+        .order("table_number", { ascending: true });
+
+      if (error) throw error;
+
+      const freshTables = ((data || []) as SwapTable[]).sort((a, b) => {
+        const priority = (status: string) => (status === "available" ? 0 : 1);
+        return priority(a.status) - priority(b.status) || a.table_number - b.table_number;
+      });
+
+      setAvailableTables(
+        freshTables.filter((t) => t.id !== table.id && t.status === "available")
+      );
+    } catch (error: any) {
+      toast({ title: "Lỗi tải bàn trống", description: error.message, variant: "destructive" });
+      setAvailableTables([]);
+    } finally {
+      setIsLoadingSwapTables(false);
+    }
+  }, [table.id, toast]);
+
+  useEffect(() => {
+    if (!showSwapDialog) return;
+
+    const channel = supabase
+      .channel(`swap-tables-${table.id}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "tables" }, () => {
+        fetchAvailableSwapTables();
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "tables" }, () => {
+        fetchAvailableSwapTables();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchAvailableSwapTables, showSwapDialog, table.id]);
 
   const updateOrderItemQty = async (item: OrderItem, delta: number) => {
     const newQty = item.quantity + delta;
@@ -239,13 +290,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   };
 
   const openSwapDialog = async () => {
-    const { data } = await supabase
-      .from("tables")
-      .select("id, table_number")
-      .eq("status", "available")
-      .order("table_number");
-    setAvailableTables(data || []);
     setShowSwapDialog(true);
+    await fetchAvailableSwapTables();
   };
 
   const handleSwapTable = async (newTableId: string, newTableNumber: number) => {
@@ -261,15 +307,20 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
         .eq("id", order.id);
       if (orderErr) throw orderErr;
 
-      await supabase.from("tables").update({ status: "occupied" }).eq("id", newTableId);
-      await supabase.from("tables").update({ status: "available" }).eq("id", table.id);
+      const [{ error: newTableErr }, { error: oldTableErr }] = await Promise.all([
+        supabase.from("tables").update({ status: "occupied" }).eq("id", newTableId),
+        supabase.from("tables").update({ status: "available" }).eq("id", table.id),
+      ]);
+      if (newTableErr) throw newTableErr;
+      if (oldTableErr) throw oldTableErr;
 
       toast({
         title: `✅ Đổi bàn thành công → Bàn #${newTableNumber}`,
         description: `Từ Bàn #${oldTableNumber} sang Bàn #${newTableNumber} lúc ${timeStr}`,
       });
+      await fetchAvailableSwapTables();
       setShowSwapDialog(false);
-      onRefresh();
+      await onRefresh();
       onClose();
     } catch (error: any) {
       toast({
@@ -483,25 +534,27 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
     {showSwapDialog && (
       <Dialog open onOpenChange={() => setShowSwapDialog(false)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
+        <DialogContent className="top-auto bottom-0 h-[min(78dvh,640px)] w-[100vw] translate-y-0 rounded-t-2xl p-0 gap-0 overflow-hidden sm:top-[50%] sm:bottom-auto sm:h-auto sm:max-h-[80vh] sm:w-[95vw] sm:max-w-lg sm:translate-y-[-50%] sm:rounded-lg">
+          <DialogHeader className="p-4 pb-2 border-b">
             <DialogTitle className="flex items-center gap-2">
               <ArrowRightLeft className="h-5 w-5" />
               Đổi bàn từ #{table.table_number}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-2">
+          <div className="flex min-h-0 flex-1 flex-col p-4 pt-3">
             <p className="text-sm text-muted-foreground">Chọn bàn trống để chuyển order sang:</p>
-            {availableTables.length === 0 ? (
+            {isLoadingSwapTables ? (
+              <div className="text-center py-8 text-muted-foreground text-sm">Đang tải bàn trống mới nhất...</div>
+            ) : availableTables.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground text-sm">Không có bàn trống nào</div>
             ) : (
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[50vh] overflow-y-auto">
+              <div className="mt-3 grid flex-1 grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2 overflow-y-auto smooth-scroll pr-1 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
                 {availableTables.map((t) => (
                   <button
                     key={t.id}
                     onClick={() => setPendingSwap(t)}
                     disabled={isSubmitting}
-                    className="table-card-available rounded-lg p-3 font-bold text-sm hover:scale-105 active:scale-95 transition-transform disabled:opacity-50"
+                    className="table-card-available min-h-[72px] rounded-lg p-3 font-bold text-sm hover:scale-[1.02] active:scale-95 transition-transform disabled:opacity-50 touch-manipulation"
                   >
                     #{t.table_number}
                     <div className="text-xs opacity-80 font-normal">Trống</div>
