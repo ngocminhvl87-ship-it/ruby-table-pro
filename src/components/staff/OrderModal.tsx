@@ -412,8 +412,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               ))}
             </ScrollArea>
 
-            {/* Totals and actions */}
-            <div className="border-t p-3 space-y-2">
+            {/* Sticky bottom totals + actions */}
+            <div className="sticky bottom-0 border-t p-3 space-y-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
               {order && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Hiện tại:</span>
@@ -434,33 +434,27 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
               <div className="flex flex-col gap-1.5">
                 {Object.keys(cart).length > 0 && (
-                  <Button onClick={handleSubmitOrder} disabled={isSubmitting} className="w-full font-bold" size="sm">
-                    <Plus className="h-3 w-3 mr-1" />
+                  <Button onClick={handleSubmitOrder} disabled={isSubmitting} className="w-full font-bold h-11" size="sm">
+                    <Plus className="h-4 w-4 mr-1" />
                     {order ? "Thêm món" : "Tạo order"}
                   </Button>
                 )}
                 {order && order.status === "open" && (
-                  <Button onClick={handleMarkPaid} disabled={isSubmitting} variant="secondary" className="w-full font-bold" size="sm">
-                    <CreditCard className="h-3 w-3 mr-1" />
+                  <Button onClick={handleMarkPaid} disabled={isSubmitting} variant="secondary" className="w-full font-bold h-11" size="sm">
+                    <CreditCard className="h-4 w-4 mr-1" />
                     Thanh toán
                   </Button>
                 )}
                 {order && order.status === "open" && (
-                  <Button onClick={openSwapDialog} disabled={isSubmitting} variant="outline" className="w-full font-bold" size="sm">
-                    <ArrowRightLeft className="h-3 w-3 mr-1" />
+                  <Button onClick={openSwapDialog} disabled={isSubmitting} variant="outline" className="w-full font-bold h-11" size="sm">
+                    <ArrowRightLeft className="h-4 w-4 mr-1" />
                     Đổi bàn
                   </Button>
                 )}
                 {order && orderItems.length > 0 && (
-                  <Button onClick={() => setShowInvoice(true)} variant="outline" className="w-full font-bold" size="sm">
-                    <FileText className="h-3 w-3 mr-1" />
+                  <Button onClick={() => setShowInvoice(true)} variant="outline" className="w-full font-bold h-11" size="sm">
+                    <FileText className="h-4 w-4 mr-1" />
                     In hoá đơn
-                  </Button>
-                )}
-                {table.status === "paid" && (
-                  <Button onClick={handleResetTable} disabled={isSubmitting} variant="outline" className="w-full font-bold" size="sm">
-                    <RotateCcw className="h-3 w-3 mr-1" />
-                    Reset bàn
                   </Button>
                 )}
               </div>
