@@ -18,7 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw, FileText, ArrowRightLeft, Trash2, Replace } from "lucide-react";
+import { Plus, Minus, ShoppingCart, CreditCard, FileText, ArrowRightLeft, Trash2, Replace } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import InvoicePreview from "@/components/shared/InvoicePreview";
 
@@ -226,22 +226,9 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     setIsSubmitting(true);
     try {
       await supabase.from("orders").update({ status: "paid" }).eq("id", order.id);
-      await supabase.from("tables").update({ status: "paid" }).eq("id", table.id);
-      toast({ title: "💰 Đã thanh toán", description: `Bàn #${table.table_number}` });
-      onRefresh();
-      onClose();
-    } catch (error: any) {
-      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleResetTable = async () => {
-    setIsSubmitting(true);
-    try {
+      // Auto-release the table to available immediately after payment
       await supabase.from("tables").update({ status: "available" }).eq("id", table.id);
-      toast({ title: "🔄 Reset", description: `Bàn #${table.table_number} đã trống` });
+      toast({ title: "💰 Đã thanh toán", description: `Bàn #${table.table_number} đã trống` });
       onRefresh();
       onClose();
     } catch (error: any) {
@@ -425,8 +412,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               ))}
             </ScrollArea>
 
-            {/* Totals and actions */}
-            <div className="border-t p-3 space-y-2">
+            {/* Sticky bottom totals + actions */}
+            <div className="sticky bottom-0 border-t p-3 space-y-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
               {order && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Hiện tại:</span>
@@ -447,33 +434,27 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
               <div className="flex flex-col gap-1.5">
                 {Object.keys(cart).length > 0 && (
-                  <Button onClick={handleSubmitOrder} disabled={isSubmitting} className="w-full font-bold" size="sm">
-                    <Plus className="h-3 w-3 mr-1" />
+                  <Button onClick={handleSubmitOrder} disabled={isSubmitting} className="w-full font-bold h-11" size="sm">
+                    <Plus className="h-4 w-4 mr-1" />
                     {order ? "Thêm món" : "Tạo order"}
                   </Button>
                 )}
                 {order && order.status === "open" && (
-                  <Button onClick={handleMarkPaid} disabled={isSubmitting} variant="secondary" className="w-full font-bold" size="sm">
-                    <CreditCard className="h-3 w-3 mr-1" />
+                  <Button onClick={handleMarkPaid} disabled={isSubmitting} variant="secondary" className="w-full font-bold h-11" size="sm">
+                    <CreditCard className="h-4 w-4 mr-1" />
                     Thanh toán
                   </Button>
                 )}
                 {order && order.status === "open" && (
-                  <Button onClick={openSwapDialog} disabled={isSubmitting} variant="outline" className="w-full font-bold" size="sm">
-                    <ArrowRightLeft className="h-3 w-3 mr-1" />
+                  <Button onClick={openSwapDialog} disabled={isSubmitting} variant="outline" className="w-full font-bold h-11" size="sm">
+                    <ArrowRightLeft className="h-4 w-4 mr-1" />
                     Đổi bàn
                   </Button>
                 )}
                 {order && orderItems.length > 0 && (
-                  <Button onClick={() => setShowInvoice(true)} variant="outline" className="w-full font-bold" size="sm">
-                    <FileText className="h-3 w-3 mr-1" />
+                  <Button onClick={() => setShowInvoice(true)} variant="outline" className="w-full font-bold h-11" size="sm">
+                    <FileText className="h-4 w-4 mr-1" />
                     In hoá đơn
-                  </Button>
-                )}
-                {table.status === "paid" && (
-                  <Button onClick={handleResetTable} disabled={isSubmitting} variant="outline" className="w-full font-bold" size="sm">
-                    <RotateCcw className="h-3 w-3 mr-1" />
-                    Reset bàn
                   </Button>
                 )}
               </div>

@@ -120,4 +120,27 @@
     backdrop-filter: blur(12px);
     background: rgba(255, 255, 255, 0.85);
   }
+  .smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .grid-auto-tables {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+  }
+  @media (min-width: 640px) {
+    .grid-auto-tables { gap: 0.75rem; }
+  }
+}
+
+html, body, #root {
+  height: 100%;
+  overscroll-behavior-y: none;
+}
+body {
+  -webkit-tap-highlight-color: transparent;
 }
