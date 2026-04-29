@@ -226,22 +226,9 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     setIsSubmitting(true);
     try {
       await supabase.from("orders").update({ status: "paid" }).eq("id", order.id);
-      await supabase.from("tables").update({ status: "paid" }).eq("id", table.id);
-      toast({ title: "💰 Đã thanh toán", description: `Bàn #${table.table_number}` });
-      onRefresh();
-      onClose();
-    } catch (error: any) {
-      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleResetTable = async () => {
-    setIsSubmitting(true);
-    try {
+      // Auto-release the table to available immediately after payment
       await supabase.from("tables").update({ status: "available" }).eq("id", table.id);
-      toast({ title: "🔄 Reset", description: `Bàn #${table.table_number} đã trống` });
+      toast({ title: "💰 Đã thanh toán", description: `Bàn #${table.table_number} đã trống` });
       onRefresh();
       onClose();
     } catch (error: any) {
