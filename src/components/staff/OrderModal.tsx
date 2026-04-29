@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatVND } from "@/lib/format";
@@ -45,6 +45,12 @@ interface OrderItem {
   menu_items?: { name: string };
 }
 
+interface SwapTable {
+  id: string;
+  table_number: number;
+  status: string;
+}
+
 interface OrderModalProps {
   table: { id: string; table_number: number; status: string };
   order?: { id: string; total_amount: number; status: string; created_at?: string };
@@ -61,8 +67,9 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
   const [showSwapDialog, setShowSwapDialog] = useState(false);
-  const [availableTables, setAvailableTables] = useState<{ id: string; table_number: number }[]>([]);
-  const [pendingSwap, setPendingSwap] = useState<{ id: string; table_number: number } | null>(null);
+  const [availableTables, setAvailableTables] = useState<SwapTable[]>([]);
+  const [isLoadingSwapTables, setIsLoadingSwapTables] = useState(false);
+  const [pendingSwap, setPendingSwap] = useState<SwapTable | null>(null);
   const [swapItem, setSwapItem] = useState<OrderItem | null>(null);
   const [deleteItem, setDeleteItem] = useState<OrderItem | null>(null);
   const { user } = useAuth();
@@ -96,6 +103,50 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     refreshOrderItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order?.id]);
+
+  const fetchAvailableSwapTables = useCallback(async () => {
+    setIsLoadingSwapTables(true);
+    try {
+      const { data, error } = await supabase
+        .from("tables")
+        .select("id, table_number, status")
+        .order("table_number", { ascending: true });
+
+      if (error) throw error;
+
+      const freshTables = ((data || []) as SwapTable[]).sort((a, b) => {
+        const priority = (status: string) => (status === "available" ? 0 : 1);
+        return priority(a.status) - priority(b.status) || a.table_number - b.table_number;
+      });
+
+      setAvailableTables(
+        freshTables.filter((t) => t.id !== table.id && t.status === "available")
+      );
+    } catch (error: any) {
+      toast({ title: "Lỗi tải bàn trống", description: error.message, variant: "destructive" });
+      setAvailableTables([]);
+    } finally {
+      setIsLoadingSwapTables(false);
+    }
+  }, [table.id, toast]);
+
+  useEffect(() => {
+    if (!showSwapDialog) return;
+
+    const channel = supabase
+      .channel(`swap-tables-${table.id}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "tables" }, () => {
+        fetchAvailableSwapTables();
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "tables" }, () => {
+        fetchAvailableSwapTables();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchAvailableSwapTables, showSwapDialog, table.id]);
 
   const updateOrderItemQty = async (item: OrderItem, delta: number) => {
     const newQty = item.quantity + delta;
