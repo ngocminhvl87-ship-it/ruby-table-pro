@@ -18,7 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Minus, ShoppingCart, CreditCard, RotateCcw, FileText, ArrowRightLeft, Trash2, Replace } from "lucide-react";
+import { Plus, Minus, ShoppingCart, CreditCard, FileText, ArrowRightLeft, Trash2, Replace } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import InvoicePreview from "@/components/shared/InvoicePreview";
 
