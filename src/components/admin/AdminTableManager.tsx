@@ -43,18 +43,37 @@ export default function AdminTableManager() {
 
     const channel = supabase
       .channel("admin-tables-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "tables" }, () => {
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "tables" }, (payload) => {
         fetchTables();
+        const newRow: any = payload.new;
+        const oldRow: any = payload.old;
+        if (newRow?.status && oldRow?.status && newRow.status !== oldRow.status) {
+          const labelMap: Record<string, string> = { available: "Trống", occupied: "Đang dùng", paid: "Đã TT" };
+          toast({
+            title: `🔄 Bàn #${newRow.table_number}`,
+            description: `${labelMap[oldRow.status] || oldRow.status} → ${labelMap[newRow.status] || newRow.status}`,
+          });
+        }
       })
-      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, (payload) => {
         fetchTables();
+        const row: any = payload.new;
+        toast({ title: "🔔 Order mới", description: `Order vừa được tạo (${(row?.total_amount || 0).toLocaleString("vi-VN")}đ)` });
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "orders" }, (payload) => {
+        fetchTables();
+        const newRow: any = payload.new;
+        const oldRow: any = payload.old;
+        if (newRow?.status === "paid" && oldRow?.status !== "paid") {
+          toast({ title: "💰 Thanh toán", description: `Order đã được thanh toán` });
+        }
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [fetchTables]);
+  }, [fetchTables, toast]);
 
   const addTable = async () => {
     const num = parseInt(newTableNumber);

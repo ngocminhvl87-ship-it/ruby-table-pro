@@ -114,13 +114,10 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
       if (error) throw error;
 
-      // Bàn "available" và "paid" đều coi là trống (đã thanh toán = đã rời bàn)
+      // Chỉ lấy bàn "available" (trống thực sự). Dữ liệu đã được chuẩn hoá.
       const emptyTables = ((data || []) as SwapTable[])
-        .filter((t) => t.id !== table.id && (t.status === "available" || t.status === "paid"))
-        .sort((a, b) => {
-          const priority = (status: string) => (status === "available" ? 0 : 1);
-          return priority(a.status) - priority(b.status) || a.table_number - b.table_number;
-        });
+        .filter((t) => t.id !== table.id && t.status === "available")
+        .sort((a, b) => a.table_number - b.table_number);
 
       setAvailableTables(emptyTables);
     } catch (error: any) {
@@ -558,7 +555,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                     className="table-card-available min-h-[72px] rounded-lg p-3 font-bold text-sm hover:scale-[1.02] active:scale-95 transition-transform disabled:opacity-50 touch-manipulation"
                   >
                     #{t.table_number}
-                    <div className="text-xs opacity-80 font-normal">{t.status === "paid" ? "Đã TT (trống)" : "Trống"}</div>
+                    <div className="text-xs opacity-80 font-normal">Trống</div>
                   </button>
                 ))}
               </div>
