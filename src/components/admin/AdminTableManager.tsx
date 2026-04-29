@@ -33,12 +33,28 @@ export default function AdminTableManager() {
   const [loadingOrders, setLoadingOrders] = useState(false);
   const { toast } = useToast();
 
-  const fetchTables = async () => {
+  const fetchTables = useCallback(async () => {
     const { data } = await supabase.from("tables").select("*").order("table_number");
     if (data) setTables(data);
-  };
+  }, []);
 
-  useEffect(() => { fetchTables(); }, []);
+  useEffect(() => {
+    fetchTables();
+
+    const channel = supabase
+      .channel("admin-tables-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "tables" }, () => {
+        fetchTables();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
+        fetchTables();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchTables]);
 
   const addTable = async () => {
     const num = parseInt(newTableNumber);
