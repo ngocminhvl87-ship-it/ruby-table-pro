@@ -534,25 +534,27 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
     {showSwapDialog && (
       <Dialog open onOpenChange={() => setShowSwapDialog(false)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
+        <DialogContent className="top-auto bottom-0 h-[min(78dvh,640px)] w-[100vw] translate-y-0 rounded-t-2xl p-0 gap-0 overflow-hidden sm:top-[50%] sm:bottom-auto sm:h-auto sm:max-h-[80vh] sm:w-[95vw] sm:max-w-lg sm:translate-y-[-50%] sm:rounded-lg">
+          <DialogHeader className="p-4 pb-2 border-b">
             <DialogTitle className="flex items-center gap-2">
               <ArrowRightLeft className="h-5 w-5" />
               Đổi bàn từ #{table.table_number}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-2">
+          <div className="flex min-h-0 flex-1 flex-col p-4 pt-3">
             <p className="text-sm text-muted-foreground">Chọn bàn trống để chuyển order sang:</p>
-            {availableTables.length === 0 ? (
+            {isLoadingSwapTables ? (
+              <div className="text-center py-8 text-muted-foreground text-sm">Đang tải bàn trống mới nhất...</div>
+            ) : availableTables.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground text-sm">Không có bàn trống nào</div>
             ) : (
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[50vh] overflow-y-auto">
+              <div className="mt-3 grid flex-1 grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2 overflow-y-auto smooth-scroll pr-1 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
                 {availableTables.map((t) => (
                   <button
                     key={t.id}
                     onClick={() => setPendingSwap(t)}
                     disabled={isSubmitting}
-                    className="table-card-available rounded-lg p-3 font-bold text-sm hover:scale-105 active:scale-95 transition-transform disabled:opacity-50"
+                    className="table-card-available min-h-[72px] rounded-lg p-3 font-bold text-sm hover:scale-[1.02] active:scale-95 transition-transform disabled:opacity-50 touch-manipulation"
                   >
                     #{t.table_number}
                     <div className="text-xs opacity-80 font-normal">Trống</div>
