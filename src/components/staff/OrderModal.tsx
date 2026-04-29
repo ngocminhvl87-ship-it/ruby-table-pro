@@ -290,13 +290,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
   };
 
   const openSwapDialog = async () => {
-    const { data } = await supabase
-      .from("tables")
-      .select("id, table_number")
-      .eq("status", "available")
-      .order("table_number");
-    setAvailableTables(data || []);
     setShowSwapDialog(true);
+    await fetchAvailableSwapTables();
   };
 
   const handleSwapTable = async (newTableId: string, newTableNumber: number) => {
@@ -312,15 +307,20 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
         .eq("id", order.id);
       if (orderErr) throw orderErr;
 
-      await supabase.from("tables").update({ status: "occupied" }).eq("id", newTableId);
-      await supabase.from("tables").update({ status: "available" }).eq("id", table.id);
+      const [{ error: newTableErr }, { error: oldTableErr }] = await Promise.all([
+        supabase.from("tables").update({ status: "occupied" }).eq("id", newTableId),
+        supabase.from("tables").update({ status: "available" }).eq("id", table.id),
+      ]);
+      if (newTableErr) throw newTableErr;
+      if (oldTableErr) throw oldTableErr;
 
       toast({
         title: `✅ Đổi bàn thành công → Bàn #${newTableNumber}`,
         description: `Từ Bàn #${oldTableNumber} sang Bàn #${newTableNumber} lúc ${timeStr}`,
       });
+      await fetchAvailableSwapTables();
       setShowSwapDialog(false);
-      onRefresh();
+      await onRefresh();
       onClose();
     } catch (error: any) {
       toast({
