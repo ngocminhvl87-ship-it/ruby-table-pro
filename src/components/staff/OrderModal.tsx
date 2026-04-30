@@ -231,7 +231,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
       let orderId = order?.id;
 
       if (!orderId) {
-        // Create new order
+        // Create new order — DB trigger sẽ tự set bàn = 'occupied'
         const { data: newOrder, error } = await supabase
           .from("orders")
           .insert({ table_id: table.id, staff_id: user!.id, status: "open", total_amount: 0 })
@@ -239,9 +239,6 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           .single();
         if (error) throw error;
         orderId = newOrder.id;
-
-        // Update table status
-        await supabase.from("tables").update({ status: "occupied" }).eq("id", table.id);
       }
 
       // Add order items
@@ -274,9 +271,9 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     if (!order) return;
     setIsSubmitting(true);
     try {
-      await supabase.from("orders").update({ status: "paid" }).eq("id", order.id);
-      // Auto-release the table to available immediately after payment
-      await supabase.from("tables").update({ status: "available" }).eq("id", table.id);
+      // DB trigger sẽ tự cập nhật bàn về 'available' khi không còn order 'open'
+      const { error } = await supabase.from("orders").update({ status: "paid" }).eq("id", order.id);
+      if (error) throw error;
       toast({ title: "💰 Đã thanh toán", description: `Bàn #${table.table_number} đã trống` });
       onRefresh();
       onClose();
@@ -299,18 +296,12 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     const now = new Date();
     const timeStr = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")} ${now.getDate().toString().padStart(2, "0")}/${(now.getMonth() + 1).toString().padStart(2, "0")}/${now.getFullYear()}`;
     try {
+      // DB trigger tự đồng bộ trạng thái cả 2 bàn (cũ → available, mới → occupied)
       const { error: orderErr } = await supabase
         .from("orders")
         .update({ table_id: newTableId })
         .eq("id", order.id);
       if (orderErr) throw orderErr;
-
-      const [{ error: newTableErr }, { error: oldTableErr }] = await Promise.all([
-        supabase.from("tables").update({ status: "occupied" }).eq("id", newTableId),
-        supabase.from("tables").update({ status: "available" }).eq("id", table.id),
-      ]);
-      if (newTableErr) throw newTableErr;
-      if (oldTableErr) throw oldTableErr;
 
       toast({
         title: `✅ Đổi bàn thành công → Bàn #${newTableNumber}`,
