@@ -48,6 +48,15 @@ export default function AppHeader() {
           <Button variant="ghost" size="icon" className="relative h-9 w-9" title="Thông báo">
             <Bell className="h-4 w-4" />
           </Button>
+          <Button
+            size="icon"
+            onClick={handleQuickSwitch}
+            disabled={switching}
+            title={`Chuyển nhanh sang ${role === "admin" ? "Nhân viên" : "Admin"}`}
+            className="h-9 w-9 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            <Repeat className="h-4 w-4" />
+          </Button>
           <Button variant="ghost" size="icon" onClick={signOut} title="Đăng xuất" className="h-9 w-9">
             <LogOut className="h-4 w-4" />
           </Button>
