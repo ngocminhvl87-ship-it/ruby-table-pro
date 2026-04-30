@@ -14,16 +14,27 @@ export default function AppHeader() {
   const [switching, setSwitching] = useState(false);
 
   const handleQuickSwitch = async () => {
+    if (switching) return;
     setSwitching(true);
     const target = role === "admin" ? STAFF_CRED : ADMIN_CRED;
+    const targetLabel = role === "admin" ? "Nhân viên" : "Admin";
     try {
+      // Tear down all realtime channels so they re-subscribe with the new JWT
+      await supabase.removeAllChannels();
       await supabase.auth.signOut();
       const { error } = await supabase.auth.signInWithPassword(target);
       if (error) {
         toast({ title: "Chuyển tài khoản thất bại", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "✅ Đã chuyển", description: `Đăng nhập thành ${role === "admin" ? "Nhân viên" : "Admin"}` });
+        // Ensure realtime socket picks up the new auth token
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          supabase.realtime.setAuth(session.access_token);
+        }
+        toast({ title: "✅ Đã chuyển", description: `Đăng nhập thành ${targetLabel}` });
       }
+    } catch (e: any) {
+      toast({ title: "Lỗi", description: e?.message || "Không thể chuyển tài khoản", variant: "destructive" });
     } finally {
       setSwitching(false);
     }
