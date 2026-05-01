@@ -617,11 +617,12 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               <SelectContent>
                 {categories.map((cat) => (
                   <SelectGroup key={cat.id}>
-                    <SelectLabel className="text-xs">{cat.name}</SelectLabel>
+                    <SelectLabel className="text-xs">{cat.icon || "📋"} {cat.name}</SelectLabel>
                     {menuItems
                       .filter((m) => m.category_id === cat.id)
                       .map((m) => (
                         <SelectItem key={m.id} value={m.id}>
+                          <span className="mr-1">{m.icon || "☕"}</span>
                           {m.name} — {formatVND(m.price)}
                         </SelectItem>
                       ))}
