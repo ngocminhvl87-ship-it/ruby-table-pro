@@ -26,6 +26,7 @@ interface Category {
   id: string;
   name: string;
   display_order: number;
+  icon?: string | null;
 }
 
 interface MenuItem {
@@ -34,6 +35,7 @@ interface MenuItem {
   price: number;
   category_id: string;
   is_available: boolean;
+  icon?: string | null;
 }
 
 interface OrderItem {
@@ -42,7 +44,7 @@ interface OrderItem {
   quantity: number;
   unit_price: number;
   subtotal: number;
-  menu_items?: { name: string };
+  menu_items?: { name: string; icon?: string | null };
 }
 
 interface SwapTable {
