@@ -348,12 +348,13 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                     selectedCategory === cat.id
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:bg-muted/80"
                   }`}
                 >
+                  <span className="text-base leading-none">{cat.icon || "📋"}</span>
                   {cat.name}
                 </button>
               ))}
@@ -361,18 +362,18 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
             {/* Menu items */}
             <ScrollArea className="flex-1 p-2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {filteredItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => addToCart(item.id)}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted active:scale-95 transition text-left group min-h-[52px]"
+                    className="flex flex-col items-center p-2 rounded-xl bg-card border hover:border-primary hover:shadow-md active:scale-95 transition text-center group"
                   >
-                    <div className="min-w-0 flex-1">
-                      <div className="font-medium text-sm truncate">{item.name}</div>
-                      <div className="text-xs text-muted-foreground">{formatVND(item.price)}</div>
+                    <div className="w-full aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-4xl mb-1.5">
+                      {item.icon || "☕"}
                     </div>
-                    <Plus className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
+                    <div className="font-medium text-xs sm:text-sm truncate w-full" title={item.name}>{item.name}</div>
+                    <div className="text-xs text-primary font-bold">{formatVND(item.price)}</div>
                   </button>
                 ))}
               </div>
