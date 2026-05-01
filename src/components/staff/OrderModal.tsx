@@ -96,7 +96,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     if (!order) return;
     const { data } = await supabase
       .from("order_items")
-      .select("*, menu_items(name)")
+      .select("*, menu_items(name, icon)")
       .eq("order_id", order.id);
     if (data) setOrderItems(data as any);
   };
