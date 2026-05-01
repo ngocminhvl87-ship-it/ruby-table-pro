@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           created_at: string
           display_order: number
+          icon: string | null
           id: string
           name: string
           updated_at: string
@@ -25,6 +26,7 @@ export type Database = {
         Insert: {
           created_at?: string
           display_order?: number
+          icon?: string | null
           id?: string
           name: string
           updated_at?: string
@@ -32,6 +34,7 @@ export type Database = {
         Update: {
           created_at?: string
           display_order?: number
+          icon?: string | null
           id?: string
           name?: string
           updated_at?: string
@@ -43,8 +46,10 @@ export type Database = {
           category_id: string
           created_at: string
           description: string | null
+          icon: string | null
           id: string
           is_available: boolean
+          is_deleted: boolean
           name: string
           price: number
           updated_at: string
@@ -53,8 +58,10 @@ export type Database = {
           category_id: string
           created_at?: string
           description?: string | null
+          icon?: string | null
           id?: string
           is_available?: boolean
+          is_deleted?: boolean
           name: string
           price: number
           updated_at?: string
@@ -63,8 +70,10 @@ export type Database = {
           category_id?: string
           created_at?: string
           description?: string | null
+          icon?: string | null
           id?: string
           is_available?: boolean
+          is_deleted?: boolean
           name?: string
           price?: number
           updated_at?: string
