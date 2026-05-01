@@ -26,6 +26,7 @@ interface Category {
   id: string;
   name: string;
   display_order: number;
+  icon?: string | null;
 }
 
 interface MenuItem {
@@ -34,6 +35,7 @@ interface MenuItem {
   price: number;
   category_id: string;
   is_available: boolean;
+  icon?: string | null;
 }
 
 interface OrderItem {
@@ -42,7 +44,7 @@ interface OrderItem {
   quantity: number;
   unit_price: number;
   subtotal: number;
-  menu_items?: { name: string };
+  menu_items?: { name: string; icon?: string | null };
 }
 
 interface SwapTable {
@@ -94,7 +96,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     if (!order) return;
     const { data } = await supabase
       .from("order_items")
-      .select("*, menu_items(name)")
+      .select("*, menu_items(name, icon)")
       .eq("order_id", order.id);
     if (data) setOrderItems(data as any);
   };
@@ -346,12 +348,13 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                     selectedCategory === cat.id
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:bg-muted/80"
                   }`}
                 >
+                  <span className="text-base leading-none">{cat.icon || "📋"}</span>
                   {cat.name}
                 </button>
               ))}
@@ -359,18 +362,18 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
             {/* Menu items */}
             <ScrollArea className="flex-1 p-2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {filteredItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => addToCart(item.id)}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted active:scale-95 transition text-left group min-h-[52px]"
+                    className="flex flex-col items-center p-2 rounded-xl bg-card border hover:border-primary hover:shadow-md active:scale-95 transition text-center group"
                   >
-                    <div className="min-w-0 flex-1">
-                      <div className="font-medium text-sm truncate">{item.name}</div>
-                      <div className="text-xs text-muted-foreground">{formatVND(item.price)}</div>
+                    <div className="w-full aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-4xl mb-1.5">
+                      {item.icon || "☕"}
                     </div>
-                    <Plus className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
+                    <div className="font-medium text-xs sm:text-sm truncate w-full" title={item.name}>{item.name}</div>
+                    <div className="text-xs text-primary font-bold">{formatVND(item.price)}</div>
                   </button>
                 ))}
               </div>
@@ -390,9 +393,12 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               {/* Existing items - editable */}
               {orderItems.map((item) => (
                 <div key={item.id} className="flex items-center justify-between gap-1 py-2 border-b border-border/30 last:border-0">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs sm:text-sm font-medium truncate">{item.menu_items?.name}</div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground">{formatVND(item.subtotal)}</div>
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="text-xl flex-shrink-0">{item.menu_items?.icon || "☕"}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs sm:text-sm font-medium truncate">{item.menu_items?.name}</div>
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">{formatVND(item.subtotal)}</div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
@@ -435,9 +441,12 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               {/* New items in cart */}
               {cartItems.map((item) => (
                 <div key={item.id} className="flex items-center justify-between py-2">
-                  <div className="text-xs sm:text-sm flex-1 min-w-0">
-                    <div className="font-medium truncate">{item.name}</div>
-                    <span className="text-muted-foreground text-[10px] sm:text-xs">{formatVND(item.price)}</span>
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="text-xl flex-shrink-0">{item.icon || "☕"}</span>
+                    <div className="text-xs sm:text-sm flex-1 min-w-0">
+                      <div className="font-medium truncate">{item.name}</div>
+                      <span className="text-muted-foreground text-[10px] sm:text-xs">{formatVND(item.price)}</span>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <button onClick={() => removeFromCart(item.id)} className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition">
@@ -608,11 +617,12 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               <SelectContent>
                 {categories.map((cat) => (
                   <SelectGroup key={cat.id}>
-                    <SelectLabel className="text-xs">{cat.name}</SelectLabel>
+                    <SelectLabel className="text-xs">{cat.icon || "📋"} {cat.name}</SelectLabel>
                     {menuItems
                       .filter((m) => m.category_id === cat.id)
                       .map((m) => (
                         <SelectItem key={m.id} value={m.id}>
+                          <span className="mr-1">{m.icon || "☕"}</span>
                           {m.name} — {formatVND(m.price)}
                         </SelectItem>
                       ))}
