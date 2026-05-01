@@ -393,9 +393,12 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               {/* Existing items - editable */}
               {orderItems.map((item) => (
                 <div key={item.id} className="flex items-center justify-between gap-1 py-2 border-b border-border/30 last:border-0">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs sm:text-sm font-medium truncate">{item.menu_items?.name}</div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground">{formatVND(item.subtotal)}</div>
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="text-xl flex-shrink-0">{item.menu_items?.icon || "☕"}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs sm:text-sm font-medium truncate">{item.menu_items?.name}</div>
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">{formatVND(item.subtotal)}</div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
