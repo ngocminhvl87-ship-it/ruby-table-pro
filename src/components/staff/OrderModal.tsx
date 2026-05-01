@@ -79,7 +79,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     const fetchMenu = async () => {
       const [{ data: cats }, { data: items }] = await Promise.all([
         supabase.from("categories").select("*").order("display_order"),
-        supabase.from("menu_items").select("*").eq("is_available", true),
+        supabase.from("menu_items").select("*").eq("is_available", true).eq("is_deleted", false),
       ]);
       if (cats) {
         setCategories(cats);
