@@ -117,9 +117,9 @@ export default function AdminMenuManager() {
 
   const confirmDeleteCategory = async () => {
     if (!deleteCat) return;
-    // Soft-delete tất cả món thuộc category trước (giữ lịch sử order_items)
     const itemsInCat = menuItems.filter((m) => m.category_id === deleteCat.id);
     if (itemsInCat.length > 0) {
+      // 1) Ẩn các món để không hiển thị nữa
       const { error: e1 } = await supabase
         .from("menu_items")
         .update({ is_deleted: true, is_available: false })
@@ -128,6 +128,20 @@ export default function AdminMenuManager() {
         toast({ title: "Lỗi", description: e1.message, variant: "destructive" });
         setDeleteCat(null);
         return;
+      }
+      // 2) Chuyển sang danh mục khác để tránh ON DELETE CASCADE xoá menu_items
+      //    (sẽ vướng FK với order_items của hoá đơn cũ)
+      const fallback = categories.find((c) => c.id !== deleteCat.id);
+      if (fallback) {
+        const { error: e2 } = await supabase
+          .from("menu_items")
+          .update({ category_id: fallback.id })
+          .eq("category_id", deleteCat.id);
+        if (e2) {
+          toast({ title: "Lỗi", description: e2.message, variant: "destructive" });
+          setDeleteCat(null);
+          return;
+        }
       }
     }
     const { error } = await supabase.from("categories").delete().eq("id", deleteCat.id);
