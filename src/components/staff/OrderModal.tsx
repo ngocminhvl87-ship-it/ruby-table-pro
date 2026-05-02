@@ -570,10 +570,10 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
         <AlertDialogHeader>
           <AlertDialogTitle>⚠️ Xác nhận đổi bàn</AlertDialogTitle>
           <AlertDialogDescription>
-            Bạn có chắc muốn chuyển toàn bộ order từ <strong>Bàn #{table.table_number}</strong> sang{" "}
-            <strong>Bàn #{pendingSwap?.table_number}</strong>?
+            Bạn có chắc muốn chuyển toàn bộ order từ <strong>{formatTableLabel(table.table_number)}</strong> sang{" "}
+            <strong>{pendingSwap ? formatTableLabel(pendingSwap.table_number) : ""}</strong>?
             <br />
-            Bàn #{table.table_number} sẽ trở thành <strong>Trống</strong>.
+            {formatTableLabel(table.table_number)} sẽ trở thành <strong>Trống</strong>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
