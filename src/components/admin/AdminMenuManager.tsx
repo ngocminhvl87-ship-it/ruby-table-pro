@@ -23,12 +23,14 @@ import { formatVND } from "@/lib/format";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit2, Trash2, Tag } from "lucide-react";
 
-const CATEGORY_ICONS = ["☕", "🍵", "🥤", "🧋", "🍰", "🍮", "🥐", "🍪", "🍦", "🥗", "🍔", "🍟", "🍕", "🍱", "🥪", "🍷", "🍺", "🧃", "🍹", "🍨"];
-const ITEM_ICONS = [
+// Bộ icon dùng chung cho cả Danh mục và Món để đảm bảo đồng bộ
+const SHARED_ICONS = [
   "☕", "🥃", "🍵", "🧋", "🥤", "🧉", "🍶", "🍷", "🍺", "🍹",
   "🥛", "🧃", "🍨", "🍦", "🍰", "🎂", "🧁", "🍮", "🍪", "🥐",
   "🥯", "🍞", "🥪", "🍔", "🍟", "🍕", "🌮", "🍱", "🥗", "🍝",
 ];
+const CATEGORY_ICONS = SHARED_ICONS;
+const ITEM_ICONS = SHARED_ICONS;
 
 interface Category {
   id: string;
