@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { formatVND } from "@/lib/format";
+import { formatVND, formatTableName, formatTableLabel } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,7 +50,7 @@ export default function AdminTableManager() {
         if (newRow?.status && oldRow?.status && newRow.status !== oldRow.status) {
           const labelMap: Record<string, string> = { available: "Trống", occupied: "Đang dùng", paid: "Đã TT" };
           toast({
-            title: `🔄 Bàn #${newRow.table_number}`,
+            title: `🔄 ${formatTableLabel(newRow.table_number)}`,
             description: `${labelMap[oldRow.status] || oldRow.status} → ${labelMap[newRow.status] || newRow.status}`,
           });
         }
@@ -141,7 +141,7 @@ export default function AdminTableManager() {
                   t.status === "occupied" ? "table-card-occupied" : "table-card-paid"
                 }`}
               >
-                #{t.table_number}
+                {formatTableName(t.table_number)}
                 <div className="text-xs opacity-80 font-normal mt-0.5">
                   {t.status === "available" ? "Trống" : t.status === "occupied" ? "Đang dùng" : "Đã TT"}
                 </div>
@@ -156,7 +156,7 @@ export default function AdminTableManager() {
           <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                Bàn #{selectedTable.table_number}
+                {formatTableLabel(selectedTable.table_number)}
                 <Badge variant={selectedTable.status === "available" ? "secondary" : selectedTable.status === "occupied" ? "destructive" : "outline"}>
                   {selectedTable.status === "available" ? "Trống" : selectedTable.status === "occupied" ? "Đang dùng" : "Đã TT"}
                 </Badge>

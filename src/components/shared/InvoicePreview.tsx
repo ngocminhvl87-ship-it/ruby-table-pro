@@ -1,4 +1,4 @@
-import { formatVND } from "@/lib/format";
+import { formatVND, formatTableName, formatTableLabel } from "@/lib/format";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -41,7 +41,7 @@ export default function InvoicePreview({
     const w = window.open("", "_blank", "width=400,height=600");
     if (!w) return;
     w.document.write(`
-      <html><head><title>Hoá đơn - Bàn #${tableNumber}</title>
+      <html><head><title>Hoá đơn - ${formatTableLabel(tableNumber)}</title>
       <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Courier New', monospace; padding: 12px; font-size: 13px; color: #000; }
@@ -72,7 +72,7 @@ export default function InvoicePreview({
           <DialogTitle className="text-center text-base">
             Xem trước hoá đơn
             <div className="text-xs text-muted-foreground font-normal mt-0.5">
-              Bàn #{tableNumber} — {formatDate(createdDate)}
+              {formatTableLabel(tableNumber)} — {formatDate(createdDate)}
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -81,7 +81,7 @@ export default function InvoicePreview({
           <div className="text-center space-y-0.5">
             <div className="text-lg font-bold">☕ Coffee Ruby</div>
             <div>Hoá đơn thanh toán</div>
-            <div>Bàn: <span className="font-bold">#{tableNumber}</span></div>
+            <div>{tableNumber === 21 ? "Hình thức:" : "Bàn:"} <span className="font-bold">{formatTableName(tableNumber)}</span></div>
             <div>Nhân viên: {staffName}</div>
             <div>Thời gian: {formatDate(createdDate)}</div>
           </div>

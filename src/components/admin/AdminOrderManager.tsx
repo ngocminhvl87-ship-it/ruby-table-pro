@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { formatVND } from "@/lib/format";
+import { formatVND, formatTableName } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -98,7 +98,7 @@ export default function AdminOrderManager() {
             <TableBody>
               {filteredOrders.map((o) => (
                 <TableRow key={o.id} className={o.is_deleted ? "opacity-50" : ""}>
-                  <TableCell>#{o.tables?.table_number}</TableCell>
+                  <TableCell>{o.tables?.table_number != null ? formatTableName(o.tables.table_number) : "-"}</TableCell>
                   <TableCell className="max-w-[100px] truncate">{o.profiles?.username || "-"}</TableCell>
                   <TableCell>{statusBadge(o.status)}</TableCell>
                   <TableCell className="font-medium whitespace-nowrap">{formatVND(o.total_amount)}</TableCell>

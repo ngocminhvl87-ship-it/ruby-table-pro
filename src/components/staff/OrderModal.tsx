@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { formatVND } from "@/lib/format";
+import { formatVND, formatTableName, formatTableLabel } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -276,7 +276,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
       // DB trigger sẽ tự cập nhật bàn về 'available' khi không còn order 'open'
       const { error } = await supabase.from("orders").update({ status: "paid" }).eq("id", order.id);
       if (error) throw error;
-      toast({ title: "💰 Đã thanh toán", description: `Bàn #${table.table_number} đã trống` });
+      toast({ title: "💰 Đã thanh toán", description: `${formatTableLabel(table.table_number)} đã trống` });
       onRefresh();
       onClose();
     } catch (error: any) {
@@ -306,8 +306,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
       if (orderErr) throw orderErr;
 
       toast({
-        title: `✅ Đổi bàn thành công → Bàn #${newTableNumber}`,
-        description: `Từ Bàn #${oldTableNumber} sang Bàn #${newTableNumber} lúc ${timeStr}`,
+        title: `✅ Đổi bàn thành công → ${formatTableLabel(newTableNumber)}`,
+        description: `Từ ${formatTableLabel(oldTableNumber)} sang ${formatTableLabel(newTableNumber)} lúc ${timeStr}`,
       });
       await fetchAvailableSwapTables();
       setShowSwapDialog(false);
@@ -315,7 +315,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
       onClose();
     } catch (error: any) {
       toast({
-        title: `❌ Đổi bàn thất bại → Bàn #${newTableNumber}`,
+        title: `❌ Đổi bàn thất bại → ${formatTableLabel(newTableNumber)}`,
         description: `${error.message} (lúc ${timeStr})`,
         variant: "destructive",
       });
@@ -332,7 +332,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
       <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 gap-0 overflow-hidden rounded-none sm:rounded-lg">
         <DialogHeader className="p-3 sm:p-4 pb-2">
           <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <span className="text-lg sm:text-xl">Bàn #{table.table_number}</span>
+            <span className="text-lg sm:text-xl">{formatTableLabel(table.table_number)}</span>
             <Badge variant={order ? "destructive" : "secondary"}>
               {order ? "Đang dùng" : "Trống"}
             </Badge>
@@ -536,7 +536,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           <DialogHeader className="p-4 pb-2 border-b">
             <DialogTitle className="flex items-center gap-2">
               <ArrowRightLeft className="h-5 w-5" />
-              Đổi bàn từ #{table.table_number}
+              Đổi bàn từ {formatTableName(table.table_number)}
             </DialogTitle>
           </DialogHeader>
           <div className="flex min-h-0 flex-1 flex-col p-4 pt-3">
@@ -554,7 +554,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                     disabled={isSubmitting}
                     className="table-card-available min-h-[72px] rounded-lg p-3 font-bold text-sm hover:scale-[1.02] active:scale-95 transition-transform disabled:opacity-50 touch-manipulation"
                   >
-                    #{t.table_number}
+                    {formatTableName(t.table_number)}
                     <div className="text-xs opacity-80 font-normal">Trống</div>
                   </button>
                 ))}
@@ -570,10 +570,10 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
         <AlertDialogHeader>
           <AlertDialogTitle>⚠️ Xác nhận đổi bàn</AlertDialogTitle>
           <AlertDialogDescription>
-            Bạn có chắc muốn chuyển toàn bộ order từ <strong>Bàn #{table.table_number}</strong> sang{" "}
-            <strong>Bàn #{pendingSwap?.table_number}</strong>?
+            Bạn có chắc muốn chuyển toàn bộ order từ <strong>{formatTableLabel(table.table_number)}</strong> sang{" "}
+            <strong>{pendingSwap ? formatTableLabel(pendingSwap.table_number) : ""}</strong>?
             <br />
-            Bàn #{table.table_number} sẽ trở thành <strong>Trống</strong>.
+            {formatTableLabel(table.table_number)} sẽ trở thành <strong>Trống</strong>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
