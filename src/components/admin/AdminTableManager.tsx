@@ -50,7 +50,7 @@ export default function AdminTableManager() {
         if (newRow?.status && oldRow?.status && newRow.status !== oldRow.status) {
           const labelMap: Record<string, string> = { available: "Trống", occupied: "Đang dùng", paid: "Đã TT" };
           toast({
-            title: `🔄 Bàn #${newRow.table_number}`,
+            title: `🔄 ${formatTableLabel(newRow.table_number)}`,
             description: `${labelMap[oldRow.status] || oldRow.status} → ${labelMap[newRow.status] || newRow.status}`,
           });
         }
