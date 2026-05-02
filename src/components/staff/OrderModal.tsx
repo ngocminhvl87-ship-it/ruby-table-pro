@@ -276,7 +276,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
       // DB trigger sẽ tự cập nhật bàn về 'available' khi không còn order 'open'
       const { error } = await supabase.from("orders").update({ status: "paid" }).eq("id", order.id);
       if (error) throw error;
-      toast({ title: "💰 Đã thanh toán", description: `Bàn #${table.table_number} đã trống` });
+      toast({ title: "💰 Đã thanh toán", description: `${formatTableLabel(table.table_number)} đã trống` });
       onRefresh();
       onClose();
     } catch (error: any) {
