@@ -156,7 +156,7 @@ export default function AdminTableManager() {
           <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                Bàn #{selectedTable.table_number}
+                {formatTableLabel(selectedTable.table_number)}
                 <Badge variant={selectedTable.status === "available" ? "secondary" : selectedTable.status === "occupied" ? "destructive" : "outline"}>
                   {selectedTable.status === "available" ? "Trống" : selectedTable.status === "occupied" ? "Đang dùng" : "Đã TT"}
                 </Badge>
