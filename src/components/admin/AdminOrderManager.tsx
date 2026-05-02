@@ -98,7 +98,7 @@ export default function AdminOrderManager() {
             <TableBody>
               {filteredOrders.map((o) => (
                 <TableRow key={o.id} className={o.is_deleted ? "opacity-50" : ""}>
-                  <TableCell>#{o.tables?.table_number}</TableCell>
+                  <TableCell>{o.tables?.table_number != null ? formatTableName(o.tables.table_number) : "-"}</TableCell>
                   <TableCell className="max-w-[100px] truncate">{o.profiles?.username || "-"}</TableCell>
                   <TableCell>{statusBadge(o.status)}</TableCell>
                   <TableCell className="font-medium whitespace-nowrap">{formatVND(o.total_amount)}</TableCell>
