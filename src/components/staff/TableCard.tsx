@@ -27,7 +27,7 @@ function TableCardBase({ table, order, onClick }: TableCardProps) {
       onClick={onClick}
       className={`${cardClass} rounded-xl p-3 sm:p-4 text-left transition-all duration-200 hover:scale-[1.03] hover:shadow-card-hover active:scale-95 animate-fade-in min-h-[96px] touch-manipulation`}
     >
-      <div className="text-2xl sm:text-3xl font-bold mb-1 leading-none">#{table.table_number}</div>
+      <div className="text-2xl sm:text-3xl font-bold mb-1 leading-none">{formatTableName(table.table_number)}</div>
       <div className="text-xs sm:text-sm opacity-90 font-medium">{statusLabel}</div>
       {order && (
         <div className="mt-1 sm:mt-2 text-xs sm:text-sm font-bold opacity-95 truncate">
