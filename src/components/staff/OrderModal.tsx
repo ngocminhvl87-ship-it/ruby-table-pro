@@ -536,7 +536,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           <DialogHeader className="p-4 pb-2 border-b">
             <DialogTitle className="flex items-center gap-2">
               <ArrowRightLeft className="h-5 w-5" />
-              Đổi bàn từ #{table.table_number}
+              Đổi bàn từ {formatTableName(table.table_number)}
             </DialogTitle>
           </DialogHeader>
           <div className="flex min-h-0 flex-1 flex-col p-4 pt-3">
