@@ -332,7 +332,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
       <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 gap-0 overflow-hidden rounded-none sm:rounded-lg">
         <DialogHeader className="p-3 sm:p-4 pb-2">
           <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <span className="text-lg sm:text-xl">Bàn #{table.table_number}</span>
+            <span className="text-lg sm:text-xl">{formatTableLabel(table.table_number)}</span>
             <Badge variant={order ? "destructive" : "secondary"}>
               {order ? "Đang dùng" : "Trống"}
             </Badge>
