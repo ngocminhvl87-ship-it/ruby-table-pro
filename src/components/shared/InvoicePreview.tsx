@@ -1,4 +1,4 @@
-import { formatVND } from "@/lib/format";
+import { formatVND, formatTableName, formatTableLabel } from "@/lib/format";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
