@@ -554,7 +554,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                     disabled={isSubmitting}
                     className="table-card-available min-h-[72px] rounded-lg p-3 font-bold text-sm hover:scale-[1.02] active:scale-95 transition-transform disabled:opacity-50 touch-manipulation"
                   >
-                    #{t.table_number}
+                    {formatTableName(t.table_number)}
                     <div className="text-xs opacity-80 font-normal">Trống</div>
                   </button>
                 ))}
