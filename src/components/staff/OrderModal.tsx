@@ -306,8 +306,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
       if (orderErr) throw orderErr;
 
       toast({
-        title: `✅ Đổi bàn thành công → Bàn #${newTableNumber}`,
-        description: `Từ Bàn #${oldTableNumber} sang Bàn #${newTableNumber} lúc ${timeStr}`,
+        title: `✅ Đổi bàn thành công → ${formatTableLabel(newTableNumber)}`,
+        description: `Từ ${formatTableLabel(oldTableNumber)} sang ${formatTableLabel(newTableNumber)} lúc ${timeStr}`,
       });
       await fetchAvailableSwapTables();
       setShowSwapDialog(false);
@@ -315,7 +315,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
       onClose();
     } catch (error: any) {
       toast({
-        title: `❌ Đổi bàn thất bại → Bàn #${newTableNumber}`,
+        title: `❌ Đổi bàn thất bại → ${formatTableLabel(newTableNumber)}`,
         description: `${error.message} (lúc ${timeStr})`,
         variant: "destructive",
       });
