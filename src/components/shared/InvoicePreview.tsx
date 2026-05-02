@@ -41,7 +41,7 @@ export default function InvoicePreview({
     const w = window.open("", "_blank", "width=400,height=600");
     if (!w) return;
     w.document.write(`
-      <html><head><title>Hoá đơn - Bàn #${tableNumber}</title>
+      <html><head><title>Hoá đơn - ${formatTableLabel(tableNumber)}</title>
       <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Courier New', monospace; padding: 12px; font-size: 13px; color: #000; }
