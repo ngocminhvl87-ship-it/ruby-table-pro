@@ -72,7 +72,7 @@ export default function InvoicePreview({
           <DialogTitle className="text-center text-base">
             Xem trước hoá đơn
             <div className="text-xs text-muted-foreground font-normal mt-0.5">
-              Bàn #{tableNumber} — {formatDate(createdDate)}
+              {formatTableLabel(tableNumber)} — {formatDate(createdDate)}
             </div>
           </DialogTitle>
         </DialogHeader>
