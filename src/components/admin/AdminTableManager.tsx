@@ -141,7 +141,7 @@ export default function AdminTableManager() {
                   t.status === "occupied" ? "table-card-occupied" : "table-card-paid"
                 }`}
               >
-                #{t.table_number}
+                {formatTableName(t.table_number)}
                 <div className="text-xs opacity-80 font-normal mt-0.5">
                   {t.status === "available" ? "Trống" : t.status === "occupied" ? "Đang dùng" : "Đã TT"}
                 </div>
