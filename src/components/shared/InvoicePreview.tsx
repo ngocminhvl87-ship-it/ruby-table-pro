@@ -81,7 +81,7 @@ export default function InvoicePreview({
           <div className="text-center space-y-0.5">
             <div className="text-lg font-bold">☕ Coffee Ruby</div>
             <div>Hoá đơn thanh toán</div>
-            <div>{tableNumber === 21 ? "Hình thức:" : "Bàn:"} <span className="font-bold">{formatTableName(tableNumber)}</span></div>
+            <div>{tableNumber === 22 ? "Hình thức:" : "Bàn:"} <span className="font-bold">{formatTableName(tableNumber)}</span></div>
             <div>Nhân viên: {staffName}</div>
             <div>Thời gian: {formatDate(createdDate)}</div>
           </div>
