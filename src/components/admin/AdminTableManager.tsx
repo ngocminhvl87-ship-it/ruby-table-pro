@@ -136,12 +136,14 @@ export default function AdminTableManager() {
               <button
                 key={t.id}
                 onClick={() => handleTableClick(t)}
-                className={`rounded-lg p-3 text-center font-bold text-sm cursor-pointer transition-transform hover:scale-105 active:scale-95 min-h-[68px] ${
+                className={`rounded-lg p-3 text-center font-bold cursor-pointer transition-transform hover:scale-105 active:scale-95 min-h-[68px] ${
+                  isTakeawayTable(t.table_number) ? "text-xs" : "text-sm"
+                } ${
                   t.status === "available" ? "table-card-available" :
                   t.status === "occupied" ? "table-card-occupied" : "table-card-paid"
                 }`}
               >
-                {formatTableName(t.table_number)}
+                <div className="whitespace-nowrap">{formatTableName(t.table_number)}</div>
                 <div className="text-xs opacity-80 font-normal mt-0.5">
                   {t.status === "available" ? "Trống" : t.status === "occupied" ? "Đang dùng" : "Đã TT"}
                 </div>
