@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { formatVND, formatTableName } from "@/lib/format";
+import { formatVND, formatTableName, isTakeawayTable } from "@/lib/format";
 
 interface TableCardProps {
   table: { id: string; table_number: number; status: string };
