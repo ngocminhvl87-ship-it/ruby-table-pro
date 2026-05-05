@@ -330,10 +330,10 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     <>
     <Dialog open onOpenChange={() => onClose()}>
       <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 gap-0 overflow-hidden rounded-none sm:rounded-lg">
-        <DialogHeader className="p-3 sm:p-4 pb-2">
-          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <span className="text-lg sm:text-xl">{formatTableLabel(table.table_number)}</span>
-            <Badge variant={order ? "destructive" : "secondary"}>
+        <DialogHeader className="p-4 sm:p-5 pb-3">
+          <DialogTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+            <span className="text-2xl sm:text-3xl font-extrabold">{formatTableLabel(table.table_number)}</span>
+            <Badge variant={order ? "destructive" : "secondary"} className="text-base sm:text-lg px-3 py-1">
               {order ? "Đang dùng" : "Trống"}
             </Badge>
           </DialogTitle>
@@ -343,37 +343,37 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           {/* Menu Section */}
           <div className="flex-1 min-w-0 flex flex-col border-r">
             {/* Category tabs */}
-            <div className="flex gap-1 p-2 overflow-x-auto border-b flex-shrink-0">
+            <div className="flex gap-2 p-2.5 overflow-x-auto border-b flex-shrink-0">
               {categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-3 py-2 rounded-lg text-sm sm:text-base font-bold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                  className={`px-4 py-2.5 rounded-lg text-base sm:text-xl font-extrabold whitespace-nowrap transition-colors flex items-center gap-2 ${
                     selectedCategory === cat.id
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:bg-muted/80"
                   }`}
                 >
-                  <span className="text-lg leading-none">{cat.icon || "📋"}</span>
+                  <span className="text-2xl leading-none">{cat.icon || "📋"}</span>
                   {cat.name}
                 </button>
               ))}
             </div>
 
             {/* Menu items */}
-            <ScrollArea className="flex-1 p-2">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <ScrollArea className="flex-1 p-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {filteredItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => addToCart(item.id)}
-                    className="flex flex-col items-center p-2 rounded-xl bg-card border hover:border-primary hover:shadow-md active:scale-95 transition text-center group"
+                    className="flex flex-col items-center p-2.5 rounded-xl bg-card border hover:border-primary hover:shadow-md active:scale-95 transition text-center group"
                   >
-                    <div className="w-full aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-5xl mb-1.5">
+                    <div className="w-full aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-6xl mb-2">
                       {item.icon || "☕"}
                     </div>
-                    <div className="font-semibold text-sm sm:text-base truncate w-full" title={item.name}>{item.name}</div>
-                    <div className="text-sm sm:text-base text-primary font-bold">{formatVND(item.price)}</div>
+                    <div className="font-extrabold text-lg sm:text-xl leading-tight truncate w-full" title={item.name}>{item.name}</div>
+                    <div className="text-lg sm:text-xl text-primary font-extrabold leading-tight">{formatVND(item.price)}</div>
                   </button>
                 ))}
               </div>
@@ -382,53 +382,53 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
           {/* Cart Section */}
           <div className="w-full md:w-80 md:min-w-[320px] flex flex-col bg-muted/30 flex-shrink-0 border-t md:border-t-0 max-h-[45vh] md:max-h-none">
-            <div className="p-3 border-b">
-              <div className="flex items-center gap-2 font-bold text-base">
-                <ShoppingCart className="h-5 w-5" />
+            <div className="p-4 border-b">
+              <div className="flex items-center gap-2 font-extrabold text-xl sm:text-2xl">
+                <ShoppingCart className="h-6 w-6" />
                 Đơn hàng
               </div>
             </div>
 
-            <ScrollArea className="flex-1 p-2">
+            <ScrollArea className="flex-1 p-3">
               {/* Existing items - editable */}
               {orderItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between gap-1 py-2 border-b border-border/30 last:border-0">
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-2xl flex-shrink-0">{item.menu_items?.icon || "☕"}</span>
+                <div key={item.id} className="flex items-center justify-between gap-2 py-3 border-b border-border/30 last:border-0">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <span className="text-4xl flex-shrink-0">{item.menu_items?.icon || "☕"}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm sm:text-base font-semibold truncate">{item.menu_items?.name}</div>
-                      <div className="text-xs sm:text-sm text-muted-foreground font-medium">{formatVND(item.subtotal)}</div>
+                      <div className="text-lg sm:text-xl font-extrabold leading-tight truncate">{item.menu_items?.name}</div>
+                      <div className="text-base sm:text-lg text-muted-foreground font-bold">{formatVND(item.subtotal)}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => updateOrderItemQty(item, -1)}
-                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition"
+                      className="h-9 w-9 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition"
                       title="Giảm"
                     >
-                      <Minus className="h-3.5 w-3.5" />
+                      <Minus className="h-5 w-5" />
                     </button>
-                    <span className="text-sm sm:text-base font-bold w-6 text-center">{item.quantity}</span>
+                    <span className="text-xl sm:text-2xl font-extrabold w-8 text-center">{item.quantity}</span>
                     <button
                       onClick={() => updateOrderItemQty(item, 1)}
-                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition"
+                      className="h-9 w-9 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition"
                       title="Tăng"
                     >
-                      <Plus className="h-3.5 w-3.5" />
+                      <Plus className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => setSwapItem(item)}
-                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground active:scale-95 transition ml-0.5"
+                      className="h-9 w-9 rounded bg-muted flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground active:scale-95 transition ml-0.5"
                       title="Đổi món"
                     >
-                      <Replace className="h-3.5 w-3.5" />
+                      <Replace className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => setDeleteItem(item)}
-                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition"
+                      className="h-9 w-9 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition"
                       title="Xoá"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
@@ -440,21 +440,21 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
               {/* New items in cart */}
               {cartItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-2xl flex-shrink-0">{item.icon || "☕"}</span>
-                    <div className="text-sm sm:text-base flex-1 min-w-0">
-                      <div className="font-semibold truncate">{item.name}</div>
-                      <span className="text-muted-foreground text-xs sm:text-sm font-medium">{formatVND(item.price)}</span>
+                <div key={item.id} className="flex items-center justify-between gap-2 py-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <span className="text-4xl flex-shrink-0">{item.icon || "☕"}</span>
+                    <div className="text-lg sm:text-xl flex-1 min-w-0">
+                      <div className="font-extrabold leading-tight truncate">{item.name}</div>
+                      <span className="text-muted-foreground text-base sm:text-lg font-bold">{formatVND(item.price)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => removeFromCart(item.id)} className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition">
-                      <Minus className="h-3.5 w-3.5" />
+                    <button onClick={() => removeFromCart(item.id)} className="h-9 w-9 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition">
+                      <Minus className="h-5 w-5" />
                     </button>
-                    <span className="text-sm sm:text-base font-bold w-6 text-center">{item.quantity}</span>
-                    <button onClick={() => addToCart(item.id)} className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition">
-                      <Plus className="h-3.5 w-3.5" />
+                    <span className="text-xl sm:text-2xl font-extrabold w-8 text-center">{item.quantity}</span>
+                    <button onClick={() => addToCart(item.id)} className="h-9 w-9 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition">
+                      <Plus className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
@@ -462,47 +462,47 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
             </ScrollArea>
 
             {/* Sticky bottom totals + actions */}
-            <div className="sticky bottom-0 border-t p-3 space-y-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+            <div className="sticky bottom-0 border-t p-4 space-y-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
               {order && (
-                <div className="flex justify-between text-base">
+                <div className="flex justify-between text-lg sm:text-xl">
                   <span className="text-muted-foreground">Hiện tại:</span>
                   <span className="font-bold">{formatVND(order.total_amount)}</span>
                 </div>
               )}
               {cartTotal > 0 && (
-                <div className="flex justify-between text-base">
+                <div className="flex justify-between text-lg sm:text-xl">
                   <span className="text-muted-foreground">Thêm mới:</span>
                   <span className="font-bold text-primary">{formatVND(cartTotal)}</span>
                 </div>
               )}
               <Separator />
-              <div className="flex justify-between font-bold text-lg">
+              <div className="flex justify-between font-extrabold text-2xl sm:text-3xl">
                 <span>Tổng cộng:</span>
                 <span>{formatVND((order?.total_amount || 0) + cartTotal)}</span>
               </div>
 
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 {Object.keys(cart).length > 0 && (
-                  <Button onClick={handleSubmitOrder} disabled={isSubmitting} className="w-full font-bold h-11" size="sm">
-                    <Plus className="h-4 w-4 mr-1" />
+                  <Button onClick={handleSubmitOrder} disabled={isSubmitting} className="w-full font-extrabold h-12 text-lg" size="sm">
+                    <Plus className="h-5 w-5 mr-1" />
                     {order ? "Thêm món" : "Tạo order"}
                   </Button>
                 )}
                 {order && order.status === "open" && (
-                  <Button onClick={handleMarkPaid} disabled={isSubmitting} variant="secondary" className="w-full font-bold h-11" size="sm">
-                    <CreditCard className="h-4 w-4 mr-1" />
+                  <Button onClick={handleMarkPaid} disabled={isSubmitting} variant="secondary" className="w-full font-extrabold h-12 text-lg" size="sm">
+                    <CreditCard className="h-5 w-5 mr-1" />
                     Thanh toán
                   </Button>
                 )}
                 {order && order.status === "open" && (
-                  <Button onClick={openSwapDialog} disabled={isSubmitting} variant="outline" className="w-full font-bold h-11" size="sm">
-                    <ArrowRightLeft className="h-4 w-4 mr-1" />
+                  <Button onClick={openSwapDialog} disabled={isSubmitting} variant="outline" className="w-full font-extrabold h-12 text-lg" size="sm">
+                    <ArrowRightLeft className="h-5 w-5 mr-1" />
                     Đổi bàn
                   </Button>
                 )}
                 {order && orderItems.length > 0 && (
-                  <Button onClick={() => setShowInvoice(true)} variant="outline" className="w-full font-bold h-11" size="sm">
-                    <FileText className="h-4 w-4 mr-1" />
+                  <Button onClick={() => setShowInvoice(true)} variant="outline" className="w-full font-extrabold h-12 text-lg" size="sm">
+                    <FileText className="h-5 w-5 mr-1" />
                     In hoá đơn
                   </Button>
                 )}
