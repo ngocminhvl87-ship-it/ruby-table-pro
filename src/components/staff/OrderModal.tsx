@@ -495,14 +495,14 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                   </Button>
                 )}
                 {order && order.status === "open" && (
-                  <Button onClick={openSwapDialog} disabled={isSubmitting} variant="outline" className="w-full font-bold h-11" size="sm">
-                    <ArrowRightLeft className="h-4 w-4 mr-1" />
+                  <Button onClick={openSwapDialog} disabled={isSubmitting} variant="outline" className="w-full font-extrabold h-12 text-lg" size="sm">
+                    <ArrowRightLeft className="h-5 w-5 mr-1" />
                     Đổi bàn
                   </Button>
                 )}
                 {order && orderItems.length > 0 && (
-                  <Button onClick={() => setShowInvoice(true)} variant="outline" className="w-full font-bold h-11" size="sm">
-                    <FileText className="h-4 w-4 mr-1" />
+                  <Button onClick={() => setShowInvoice(true)} variant="outline" className="w-full font-extrabold h-12 text-lg" size="sm">
+                    <FileText className="h-5 w-5 mr-1" />
                     In hoá đơn
                   </Button>
                 )}
