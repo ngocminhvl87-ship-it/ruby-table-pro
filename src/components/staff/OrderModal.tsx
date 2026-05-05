@@ -464,19 +464,19 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
             {/* Sticky bottom totals + actions */}
             <div className="sticky bottom-0 border-t p-3 space-y-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
               {order && (
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-base">
                   <span className="text-muted-foreground">Hiện tại:</span>
                   <span className="font-bold">{formatVND(order.total_amount)}</span>
                 </div>
               )}
               {cartTotal > 0 && (
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-base">
                   <span className="text-muted-foreground">Thêm mới:</span>
                   <span className="font-bold text-primary">{formatVND(cartTotal)}</span>
                 </div>
               )}
               <Separator />
-              <div className="flex justify-between font-bold">
+              <div className="flex justify-between font-bold text-lg">
                 <span>Tổng cộng:</span>
                 <span>{formatVND((order?.total_amount || 0) + cartTotal)}</span>
               </div>
