@@ -330,10 +330,10 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
     <>
     <Dialog open onOpenChange={() => onClose()}>
       <DialogContent className="max-w-4xl w-[100vw] sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 gap-0 overflow-hidden rounded-none sm:rounded-lg">
-        <DialogHeader className="p-3 sm:p-4 pb-2">
-          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <span className="text-lg sm:text-xl">{formatTableLabel(table.table_number)}</span>
-            <Badge variant={order ? "destructive" : "secondary"}>
+        <DialogHeader className="p-4 sm:p-5 pb-3">
+          <DialogTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+            <span className="text-2xl sm:text-3xl font-extrabold">{formatTableLabel(table.table_number)}</span>
+            <Badge variant={order ? "destructive" : "secondary"} className="text-base sm:text-lg px-3 py-1">
               {order ? "Đang dùng" : "Trống"}
             </Badge>
           </DialogTitle>
@@ -343,37 +343,37 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           {/* Menu Section */}
           <div className="flex-1 min-w-0 flex flex-col border-r">
             {/* Category tabs */}
-            <div className="flex gap-1 p-2 overflow-x-auto border-b flex-shrink-0">
+            <div className="flex gap-2 p-2.5 overflow-x-auto border-b flex-shrink-0">
               {categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-3 py-2 rounded-lg text-sm sm:text-base font-bold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                  className={`px-4 py-2.5 rounded-lg text-base sm:text-xl font-extrabold whitespace-nowrap transition-colors flex items-center gap-2 ${
                     selectedCategory === cat.id
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:bg-muted/80"
                   }`}
                 >
-                  <span className="text-lg leading-none">{cat.icon || "📋"}</span>
+                  <span className="text-2xl leading-none">{cat.icon || "📋"}</span>
                   {cat.name}
                 </button>
               ))}
             </div>
 
             {/* Menu items */}
-            <ScrollArea className="flex-1 p-2">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <ScrollArea className="flex-1 p-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {filteredItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => addToCart(item.id)}
-                    className="flex flex-col items-center p-2 rounded-xl bg-card border hover:border-primary hover:shadow-md active:scale-95 transition text-center group"
+                    className="flex flex-col items-center p-2.5 rounded-xl bg-card border hover:border-primary hover:shadow-md active:scale-95 transition text-center group"
                   >
-                    <div className="w-full aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-5xl mb-1.5">
+                    <div className="w-full aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-6xl mb-2">
                       {item.icon || "☕"}
                     </div>
-                    <div className="font-semibold text-sm sm:text-base truncate w-full" title={item.name}>{item.name}</div>
-                    <div className="text-sm sm:text-base text-primary font-bold">{formatVND(item.price)}</div>
+                    <div className="font-extrabold text-lg sm:text-xl leading-tight truncate w-full" title={item.name}>{item.name}</div>
+                    <div className="text-lg sm:text-xl text-primary font-extrabold leading-tight">{formatVND(item.price)}</div>
                   </button>
                 ))}
               </div>
