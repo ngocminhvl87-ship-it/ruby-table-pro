@@ -382,53 +382,53 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
 
           {/* Cart Section */}
           <div className="w-full md:w-80 md:min-w-[320px] flex flex-col bg-muted/30 flex-shrink-0 border-t md:border-t-0 max-h-[45vh] md:max-h-none">
-            <div className="p-3 border-b">
-              <div className="flex items-center gap-2 font-bold text-base">
-                <ShoppingCart className="h-5 w-5" />
+            <div className="p-4 border-b">
+              <div className="flex items-center gap-2 font-extrabold text-xl sm:text-2xl">
+                <ShoppingCart className="h-6 w-6" />
                 Đơn hàng
               </div>
             </div>
 
-            <ScrollArea className="flex-1 p-2">
+            <ScrollArea className="flex-1 p-3">
               {/* Existing items - editable */}
               {orderItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between gap-1 py-2 border-b border-border/30 last:border-0">
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-2xl flex-shrink-0">{item.menu_items?.icon || "☕"}</span>
+                <div key={item.id} className="flex items-center justify-between gap-2 py-3 border-b border-border/30 last:border-0">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <span className="text-4xl flex-shrink-0">{item.menu_items?.icon || "☕"}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm sm:text-base font-semibold truncate">{item.menu_items?.name}</div>
-                      <div className="text-xs sm:text-sm text-muted-foreground font-medium">{formatVND(item.subtotal)}</div>
+                      <div className="text-lg sm:text-xl font-extrabold leading-tight truncate">{item.menu_items?.name}</div>
+                      <div className="text-base sm:text-lg text-muted-foreground font-bold">{formatVND(item.subtotal)}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => updateOrderItemQty(item, -1)}
-                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition"
+                      className="h-9 w-9 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition"
                       title="Giảm"
                     >
-                      <Minus className="h-3.5 w-3.5" />
+                      <Minus className="h-5 w-5" />
                     </button>
-                    <span className="text-sm sm:text-base font-bold w-6 text-center">{item.quantity}</span>
+                    <span className="text-xl sm:text-2xl font-extrabold w-8 text-center">{item.quantity}</span>
                     <button
                       onClick={() => updateOrderItemQty(item, 1)}
-                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition"
+                      className="h-9 w-9 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition"
                       title="Tăng"
                     >
-                      <Plus className="h-3.5 w-3.5" />
+                      <Plus className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => setSwapItem(item)}
-                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground active:scale-95 transition ml-0.5"
+                      className="h-9 w-9 rounded bg-muted flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground active:scale-95 transition ml-0.5"
                       title="Đổi món"
                     >
-                      <Replace className="h-3.5 w-3.5" />
+                      <Replace className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => setDeleteItem(item)}
-                      className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition"
+                      className="h-9 w-9 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition"
                       title="Xoá"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
