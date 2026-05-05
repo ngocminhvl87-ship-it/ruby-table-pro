@@ -408,7 +408,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                     >
                       <Minus className="h-3.5 w-3.5" />
                     </button>
-                    <span className="text-xs sm:text-sm font-bold w-6 text-center">{item.quantity}</span>
+                    <span className="text-sm sm:text-base font-bold w-6 text-center">{item.quantity}</span>
                     <button
                       onClick={() => updateOrderItemQty(item, 1)}
                       className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition"
