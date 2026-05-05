@@ -383,8 +383,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           {/* Cart Section */}
           <div className="w-full md:w-80 md:min-w-[320px] flex flex-col bg-muted/30 flex-shrink-0 border-t md:border-t-0 max-h-[45vh] md:max-h-none">
             <div className="p-3 border-b">
-              <div className="flex items-center gap-2 font-bold text-sm">
-                <ShoppingCart className="h-4 w-4" />
+              <div className="flex items-center gap-2 font-bold text-base">
+                <ShoppingCart className="h-5 w-5" />
                 Đơn hàng
               </div>
             </div>
