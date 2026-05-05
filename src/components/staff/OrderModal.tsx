@@ -383,8 +383,8 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
           {/* Cart Section */}
           <div className="w-full md:w-80 md:min-w-[320px] flex flex-col bg-muted/30 flex-shrink-0 border-t md:border-t-0 max-h-[45vh] md:max-h-none">
             <div className="p-3 border-b">
-              <div className="flex items-center gap-2 font-bold text-sm">
-                <ShoppingCart className="h-4 w-4" />
+              <div className="flex items-center gap-2 font-bold text-base">
+                <ShoppingCart className="h-5 w-5" />
                 Đơn hàng
               </div>
             </div>
@@ -394,10 +394,10 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               {orderItems.map((item) => (
                 <div key={item.id} className="flex items-center justify-between gap-1 py-2 border-b border-border/30 last:border-0">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-xl flex-shrink-0">{item.menu_items?.icon || "☕"}</span>
+                    <span className="text-2xl flex-shrink-0">{item.menu_items?.icon || "☕"}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs sm:text-sm font-medium truncate">{item.menu_items?.name}</div>
-                      <div className="text-[10px] sm:text-xs text-muted-foreground">{formatVND(item.subtotal)}</div>
+                      <div className="text-sm sm:text-base font-semibold truncate">{item.menu_items?.name}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground font-medium">{formatVND(item.subtotal)}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
@@ -408,7 +408,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                     >
                       <Minus className="h-3.5 w-3.5" />
                     </button>
-                    <span className="text-xs sm:text-sm font-bold w-6 text-center">{item.quantity}</span>
+                    <span className="text-sm sm:text-base font-bold w-6 text-center">{item.quantity}</span>
                     <button
                       onClick={() => updateOrderItemQty(item, 1)}
                       className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition"
@@ -442,17 +442,17 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               {cartItems.map((item) => (
                 <div key={item.id} className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-xl flex-shrink-0">{item.icon || "☕"}</span>
-                    <div className="text-xs sm:text-sm flex-1 min-w-0">
-                      <div className="font-medium truncate">{item.name}</div>
-                      <span className="text-muted-foreground text-[10px] sm:text-xs">{formatVND(item.price)}</span>
+                    <span className="text-2xl flex-shrink-0">{item.icon || "☕"}</span>
+                    <div className="text-sm sm:text-base flex-1 min-w-0">
+                      <div className="font-semibold truncate">{item.name}</div>
+                      <span className="text-muted-foreground text-xs sm:text-sm font-medium">{formatVND(item.price)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <button onClick={() => removeFromCart(item.id)} className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition">
                       <Minus className="h-3.5 w-3.5" />
                     </button>
-                    <span className="text-xs sm:text-sm font-bold w-6 text-center">{item.quantity}</span>
+                    <span className="text-sm sm:text-base font-bold w-6 text-center">{item.quantity}</span>
                     <button onClick={() => addToCart(item.id)} className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition">
                       <Plus className="h-3.5 w-3.5" />
                     </button>
@@ -464,19 +464,19 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
             {/* Sticky bottom totals + actions */}
             <div className="sticky bottom-0 border-t p-3 space-y-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
               {order && (
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-base">
                   <span className="text-muted-foreground">Hiện tại:</span>
                   <span className="font-bold">{formatVND(order.total_amount)}</span>
                 </div>
               )}
               {cartTotal > 0 && (
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-base">
                   <span className="text-muted-foreground">Thêm mới:</span>
                   <span className="font-bold text-primary">{formatVND(cartTotal)}</span>
                 </div>
               )}
               <Separator />
-              <div className="flex justify-between font-bold">
+              <div className="flex justify-between font-bold text-lg">
                 <span>Tổng cộng:</span>
                 <span>{formatVND((order?.total_amount || 0) + cartTotal)}</span>
               </div>
