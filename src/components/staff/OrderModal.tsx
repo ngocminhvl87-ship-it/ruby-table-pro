@@ -442,17 +442,17 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
               {cartItems.map((item) => (
                 <div key={item.id} className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-xl flex-shrink-0">{item.icon || "☕"}</span>
-                    <div className="text-xs sm:text-sm flex-1 min-w-0">
-                      <div className="font-medium truncate">{item.name}</div>
-                      <span className="text-muted-foreground text-[10px] sm:text-xs">{formatVND(item.price)}</span>
+                    <span className="text-2xl flex-shrink-0">{item.icon || "☕"}</span>
+                    <div className="text-sm sm:text-base flex-1 min-w-0">
+                      <div className="font-semibold truncate">{item.name}</div>
+                      <span className="text-muted-foreground text-xs sm:text-sm font-medium">{formatVND(item.price)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <button onClick={() => removeFromCart(item.id)} className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground active:scale-95 transition">
                       <Minus className="h-3.5 w-3.5" />
                     </button>
-                    <span className="text-xs sm:text-sm font-bold w-6 text-center">{item.quantity}</span>
+                    <span className="text-sm sm:text-base font-bold w-6 text-center">{item.quantity}</span>
                     <button onClick={() => addToCart(item.id)} className="h-8 w-8 rounded bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground active:scale-95 transition">
                       <Plus className="h-3.5 w-3.5" />
                     </button>
