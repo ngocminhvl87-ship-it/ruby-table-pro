@@ -17,6 +17,7 @@ export default function AdminRevenueReport() {
         .from("orders")
         .select("*")
         .eq("status", "paid")
+        .eq("is_deleted", false)
         .order("created_at", { ascending: true });
       if (data) setOrders(data);
     };
