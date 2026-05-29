@@ -156,6 +156,25 @@ export default function AdminMenuManager() {
     setDeleteCat(null);
   };
 
+  const moveCategory = async (index: number, direction: -1 | 1) => {
+    const target = index + direction;
+    if (target < 0 || target >= categories.length) return;
+    const a = categories[index];
+    const b = categories[target];
+    // Optimistic update
+    const reordered = [...categories];
+    [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+    setCategories(reordered.map((c, i) => ({ ...c, display_order: i })));
+    const { error } = await supabase.from("categories").upsert([
+      { ...a, display_order: b.display_order },
+      { ...b, display_order: a.display_order },
+    ]);
+    if (error) {
+      toast({ title: "Lỗi", description: error.message, variant: "destructive" });
+      fetchData();
+    }
+  };
+
   // ----- Item CRUD -----
   const openAddItem = () => {
     setItemForm({ ...emptyItem, category_id: categories[0]?.id || "" });
