@@ -293,7 +293,7 @@ export default function AdminMenuManager() {
 
           {/* Grid thumbnails */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {categories.map((c) => (
+            {categories.map((c, idx) => (
               <div
                 key={c.id}
                 className="group relative bg-gradient-to-br from-card to-muted/40 border border-border rounded-xl p-3 hover:shadow-md hover:border-primary/40 transition-all"
@@ -303,20 +303,38 @@ export default function AdminMenuManager() {
                 <div className="text-center text-xs text-muted-foreground">
                   {menuItems.filter((m) => m.category_id === c.id).length} món
                 </div>
-                <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                {/* Reorder controls - always visible for mobile/iPad */}
+                <div className="flex items-center justify-center gap-1 mt-2 pt-2 border-t border-border/50">
+                  <button
+                    onClick={() => moveCategory(idx, -1)}
+                    disabled={idx === 0}
+                    className="p-1.5 rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
+                    aria-label="Lên"
+                  >
+                    <ArrowUp className="h-4 w-4" />
+                  </button>
+                  <span className="text-xs text-muted-foreground w-6 text-center">{idx + 1}</span>
+                  <button
+                    onClick={() => moveCategory(idx, 1)}
+                    disabled={idx === categories.length - 1}
+                    className="p-1.5 rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
+                    aria-label="Xuống"
+                  >
+                    <ArrowDown className="h-4 w-4" />
+                  </button>
                   <button
                     onClick={() => setEditCat({ ...c })}
-                    className="p-1 rounded bg-background/80 hover:bg-primary hover:text-primary-foreground"
+                    className="p-1.5 rounded hover:bg-primary hover:text-primary-foreground ml-1"
                     aria-label="Sửa danh mục"
                   >
-                    <Edit2 className="h-3 w-3" />
+                    <Edit2 className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => setDeleteCat(c)}
-                    className="p-1 rounded bg-background/80 hover:bg-destructive hover:text-destructive-foreground"
+                    className="p-1.5 rounded text-destructive hover:bg-destructive/10"
                     aria-label="Xoá danh mục"
                   >
-                    <Trash2 className="h-3 w-3" />
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
