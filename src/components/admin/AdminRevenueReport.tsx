@@ -61,12 +61,14 @@ export default function AdminRevenueReport() {
     };
 
     const range = getRange(period);
+    // Dùng thời điểm thanh toán (updated_at) cho đơn 'paid' để doanh thu khớp ngày thực tế thu tiền
+    const getOrderDate = (o: any) => new Date(o.updated_at || o.created_at);
     const currentOrders = orders.filter((o) => {
-      const d = new Date(o.created_at);
+      const d = getOrderDate(o);
       return d >= range.current.start && d <= range.current.end;
     });
     const prevOrders = orders.filter((o) => {
-      const d = new Date(o.created_at);
+      const d = getOrderDate(o);
       return d >= range.prev.start && d <= range.prev.end;
     });
 
