@@ -13,16 +13,35 @@ export default function AdminRevenueReport() {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const { data } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("status", "paid")
-        .eq("is_deleted", false)
-        .order("created_at", { ascending: true });
-      if (data) setOrders(data);
+      const now = new Date();
+      // Lấy khoảng thời gian rộng để bao trùm cả kỳ hiện tại và kỳ trước
+      let fromDate: Date;
+      if (period === "day") fromDate = startOfDay(subDays(now, 2));
+      else if (period === "month") fromDate = startOfMonth(subMonths(now, 1));
+      else fromDate = startOfYear(subYears(now, 1));
+
+      // Phân trang để tránh giới hạn 1000 dòng mặc định của PostgREST
+      const pageSize = 1000;
+      let allRows: any[] = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from("orders")
+          .select("*")
+          .eq("status", "paid")
+          .eq("is_deleted", false)
+          .gte("updated_at", fromDate.toISOString())
+          .order("updated_at", { ascending: true })
+          .range(from, from + pageSize - 1);
+        if (error || !data) break;
+        allRows = allRows.concat(data);
+        if (data.length < pageSize) break;
+        from += pageSize;
+      }
+      setOrders(allRows);
     };
     fetchOrders();
-  }, []);
+  }, [period]);
 
   const stats = useMemo(() => {
     const now = new Date();
