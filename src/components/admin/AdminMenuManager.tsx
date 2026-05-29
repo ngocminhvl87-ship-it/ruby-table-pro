@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { formatVND } from "@/lib/format";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit2, Trash2, Tag } from "lucide-react";
+import { Plus, Edit2, Trash2, Tag, ArrowUp, ArrowDown } from "lucide-react";
 
 // Bộ icon dùng chung cho cả Danh mục và Món để đảm bảo đồng bộ
 const SHARED_ICONS = [
