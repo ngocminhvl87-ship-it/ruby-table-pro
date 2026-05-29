@@ -61,12 +61,14 @@ export default function AdminRevenueReport() {
     };
 
     const range = getRange(period);
+    // Dùng thời điểm thanh toán (updated_at) cho đơn 'paid' để doanh thu khớp ngày thực tế thu tiền
+    const getOrderDate = (o: any) => new Date(o.updated_at || o.created_at);
     const currentOrders = orders.filter((o) => {
-      const d = new Date(o.created_at);
+      const d = getOrderDate(o);
       return d >= range.current.start && d <= range.current.end;
     });
     const prevOrders = orders.filter((o) => {
-      const d = new Date(o.created_at);
+      const d = getOrderDate(o);
       return d >= range.prev.start && d <= range.prev.end;
     });
 
@@ -86,11 +88,12 @@ export default function AdminRevenueReport() {
 
   const chartData = useMemo(() => {
     const now = new Date();
+    const getOrderDate = (o: any) => new Date(o.updated_at || o.created_at);
     if (period === "day") {
       const hours = Array.from({ length: 24 }, (_, i) => i);
       return hours.map((h) => {
         const hourOrders = orders.filter((o) => {
-          const d = new Date(o.created_at);
+          const d = getOrderDate(o);
           return d >= startOfDay(now) && d <= endOfDay(now) && d.getHours() === h;
         });
         return { name: `${h}h`, revenue: hourOrders.reduce((s, o) => s + o.total_amount, 0), orders: hourOrders.length };
@@ -100,7 +103,7 @@ export default function AdminRevenueReport() {
       const days = Array.from({ length: 31 }, (_, i) => i + 1);
       return days.map((d) => {
         const dayOrders = orders.filter((o) => {
-          const date = new Date(o.created_at);
+          const date = getOrderDate(o);
           return date >= startOfMonth(now) && date <= endOfMonth(now) && date.getDate() === d;
         });
         return { name: `${d}`, revenue: dayOrders.reduce((s, o) => s + o.total_amount, 0), orders: dayOrders.length };
@@ -109,7 +112,7 @@ export default function AdminRevenueReport() {
     const months = Array.from({ length: 12 }, (_, i) => i);
     return months.map((m) => {
       const monthOrders = orders.filter((o) => {
-        const date = new Date(o.created_at);
+        const date = getOrderDate(o);
         return date >= startOfYear(now) && date <= endOfYear(now) && date.getMonth() === m;
       });
       return { name: `T${m + 1}`, revenue: monthOrders.reduce((s, o) => s + o.total_amount, 0), orders: monthOrders.length };
