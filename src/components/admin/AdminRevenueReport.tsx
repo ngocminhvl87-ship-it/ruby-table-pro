@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatVND } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { TrendingUp, TrendingDown, DollarSign, ShoppingCart } from "lucide-react";
 import { format, subDays, startOfDay, endOfDay, startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears } from "date-fns";
@@ -158,6 +159,41 @@ export default function AdminRevenueReport() {
     return Array.from(map.values()).sort((a, b) => b.quantity - a.quantity);
   }, [orders, stats]);
 
+  // Doanh thu chi tiết theo từng tháng (cho tab "Theo năm")
+  const monthlyBreakdown = useMemo(() => {
+    const now = new Date();
+    const getOrderDate = (o: any) => new Date(o.updated_at || o.created_at);
+    const yearStart = startOfYear(now);
+    const yearEnd = endOfYear(now);
+    const months = Array.from({ length: 12 }, (_, i) => i);
+    return months.map((m) => {
+      const monthOrders = orders.filter((o) => {
+        const d = getOrderDate(o);
+        return d >= yearStart && d <= yearEnd && d.getMonth() === m;
+      });
+      const revenue = monthOrders.reduce((s, o) => s + o.total_amount, 0);
+      const itemsMap = new Map<string, { name: string; quantity: number; revenue: number }>();
+      monthOrders.forEach((o) => {
+        (o.order_items || []).forEach((it: any) => {
+          const key = it.menu_item_id;
+          const name = it.menu_items?.name || "Không rõ";
+          const cur = itemsMap.get(key) || { name, quantity: 0, revenue: 0 };
+          cur.quantity += it.quantity || 0;
+          cur.revenue += it.subtotal || 0;
+          itemsMap.set(key, cur);
+        });
+      });
+      const items = Array.from(itemsMap.values()).sort((a, b) => b.quantity - a.quantity);
+      return {
+        month: m + 1,
+        label: `Tháng ${m + 1}/${now.getFullYear()}`,
+        revenue,
+        count: monthOrders.length,
+        items,
+      };
+    });
+  }, [orders]);
+
   return (
     <div className="space-y-4">
       <Tabs value={period} onValueChange={setPeriod}>
@@ -267,6 +303,65 @@ export default function AdminRevenueReport() {
                 </table>
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Doanh thu chi tiết theo từng tháng (chỉ hiện ở tab "Theo năm") */}
+      {period === "year" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Doanh thu chi tiết theo từng tháng</CardTitle>
+          </CardHeader>
+          <CardContent className="px-2 sm:px-6">
+            <Accordion type="multiple" className="w-full">
+              {monthlyBreakdown.map((mb) => (
+                <AccordionItem key={mb.month} value={`m-${mb.month}`}>
+                  <AccordionTrigger className="py-3 hover:no-underline">
+                    <div className="flex flex-1 items-center justify-between pr-2 gap-2">
+                      <span className="font-medium text-left">{mb.label}</span>
+                      <div className="flex items-center gap-3 text-sm">
+                        <span className="text-muted-foreground">{mb.count} đơn</span>
+                        <span className="font-semibold">{formatVND(mb.revenue)}</span>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {mb.items.length === 0 ? (
+                      <p className="text-sm text-muted-foreground py-2">Chưa có đơn nào trong tháng này.</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b text-left text-muted-foreground">
+                              <th className="py-2 pr-2">Tên món</th>
+                              <th className="py-2 px-2 text-right">SL</th>
+                              <th className="py-2 pl-2 text-right">Doanh thu</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {mb.items.map((it, i) => (
+                              <tr key={i} className="border-b last:border-0">
+                                <td className="py-2 pr-2 font-medium">{it.name}</td>
+                                <td className="py-2 px-2 text-right">{it.quantity}</td>
+                                <td className="py-2 pl-2 text-right">{formatVND(it.revenue)}</td>
+                              </tr>
+                            ))}
+                            <tr className="font-semibold">
+                              <td className="py-2 pr-2">Tổng</td>
+                              <td className="py-2 px-2 text-right">
+                                {mb.items.reduce((s, i) => s + i.quantity, 0)}
+                              </td>
+                              <td className="py-2 pl-2 text-right">{formatVND(mb.revenue)}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </CardContent>
         </Card>
       )}
