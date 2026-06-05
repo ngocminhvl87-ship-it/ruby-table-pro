@@ -138,6 +138,26 @@ export default function AdminRevenueReport() {
     });
   }, [orders, period]);
 
+  const itemsBreakdown = useMemo(() => {
+    const getOrderDate = (o: any) => new Date(o.updated_at || o.created_at);
+    const inRange = orders.filter((o) => {
+      const d = getOrderDate(o);
+      return d >= stats.current.start && d <= stats.current.end;
+    });
+    const map = new Map<string, { name: string; quantity: number; revenue: number }>();
+    inRange.forEach((o) => {
+      (o.order_items || []).forEach((it: any) => {
+        const key = it.menu_item_id;
+        const name = it.menu_items?.name || "Không rõ";
+        const cur = map.get(key) || { name, quantity: 0, revenue: 0 };
+        cur.quantity += it.quantity || 0;
+        cur.revenue += it.subtotal || 0;
+        map.set(key, cur);
+      });
+    });
+    return Array.from(map.values()).sort((a, b) => b.quantity - a.quantity);
+  }, [orders, stats]);
+
   return (
     <div className="space-y-4">
       <Tabs value={period} onValueChange={setPeriod}>
