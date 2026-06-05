@@ -159,6 +159,41 @@ export default function AdminRevenueReport() {
     return Array.from(map.values()).sort((a, b) => b.quantity - a.quantity);
   }, [orders, stats]);
 
+  // Doanh thu chi tiết theo từng tháng (cho tab "Theo năm")
+  const monthlyBreakdown = useMemo(() => {
+    const now = new Date();
+    const getOrderDate = (o: any) => new Date(o.updated_at || o.created_at);
+    const yearStart = startOfYear(now);
+    const yearEnd = endOfYear(now);
+    const months = Array.from({ length: 12 }, (_, i) => i);
+    return months.map((m) => {
+      const monthOrders = orders.filter((o) => {
+        const d = getOrderDate(o);
+        return d >= yearStart && d <= yearEnd && d.getMonth() === m;
+      });
+      const revenue = monthOrders.reduce((s, o) => s + o.total_amount, 0);
+      const itemsMap = new Map<string, { name: string; quantity: number; revenue: number }>();
+      monthOrders.forEach((o) => {
+        (o.order_items || []).forEach((it: any) => {
+          const key = it.menu_item_id;
+          const name = it.menu_items?.name || "Không rõ";
+          const cur = itemsMap.get(key) || { name, quantity: 0, revenue: 0 };
+          cur.quantity += it.quantity || 0;
+          cur.revenue += it.subtotal || 0;
+          itemsMap.set(key, cur);
+        });
+      });
+      const items = Array.from(itemsMap.values()).sort((a, b) => b.quantity - a.quantity);
+      return {
+        month: m + 1,
+        label: `Tháng ${m + 1}/${now.getFullYear()}`,
+        revenue,
+        count: monthOrders.length,
+        items,
+      };
+    });
+  }, [orders]);
+
   return (
     <div className="space-y-4">
       <Tabs value={period} onValueChange={setPeriod}>
