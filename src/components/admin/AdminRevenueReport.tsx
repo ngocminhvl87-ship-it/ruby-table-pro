@@ -27,7 +27,7 @@ export default function AdminRevenueReport() {
       while (true) {
         const { data, error } = await supabase
           .from("orders")
-          .select("*")
+          .select("*, order_items(quantity, unit_price, subtotal, menu_item_id, menu_items(name))")
           .eq("status", "paid")
           .eq("is_deleted", false)
           .gte("updated_at", fromDate.toISOString())
