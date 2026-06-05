@@ -222,6 +222,54 @@ export default function AdminRevenueReport() {
           </ResponsiveContainer>
         </CardContent>
       </Card>
+
+      {/* Danh sách thức uống đã order */}
+      {period !== "year" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              Thức uống đã order ({stats.label.toLowerCase()})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-2 sm:px-6">
+            {itemsBreakdown.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                Chưa có đơn nào trong kỳ này.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-muted-foreground">
+                      <th className="py-2 pr-2">Tên món</th>
+                      <th className="py-2 px-2 text-right">SL</th>
+                      <th className="py-2 pl-2 text-right">Doanh thu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {itemsBreakdown.map((it, i) => (
+                      <tr key={i} className="border-b last:border-0">
+                        <td className="py-2 pr-2 font-medium">{it.name}</td>
+                        <td className="py-2 px-2 text-right">{it.quantity}</td>
+                        <td className="py-2 pl-2 text-right">{formatVND(it.revenue)}</td>
+                      </tr>
+                    ))}
+                    <tr className="font-semibold">
+                      <td className="py-2 pr-2">Tổng</td>
+                      <td className="py-2 px-2 text-right">
+                        {itemsBreakdown.reduce((s, i) => s + i.quantity, 0)}
+                      </td>
+                      <td className="py-2 pl-2 text-right">
+                        {formatVND(itemsBreakdown.reduce((s, i) => s + i.revenue, 0))}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
