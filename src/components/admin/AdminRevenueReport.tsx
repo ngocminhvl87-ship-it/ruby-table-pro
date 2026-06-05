@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatVND } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { TrendingUp, TrendingDown, DollarSign, ShoppingCart } from "lucide-react";
 import { format, subDays, startOfDay, endOfDay, startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears } from "date-fns";
