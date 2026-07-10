@@ -348,13 +348,13 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-4 py-2.5 rounded-lg text-base sm:text-xl font-extrabold whitespace-nowrap transition-colors flex items-center gap-2 ${
+                  className={`px-3 py-2 rounded-lg text-sm sm:text-base font-bold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                     selectedCategory === cat.id
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:bg-muted/80"
                   }`}
                 >
-                  <span className="text-2xl leading-none">{cat.icon || "📋"}</span>
+                  <span className="text-lg leading-none">{cat.icon || "📋"}</span>
                   {cat.name}
                 </button>
               ))}
@@ -369,11 +369,11 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                     onClick={() => addToCart(item.id)}
                     className="flex flex-col items-center p-2.5 rounded-xl bg-card border hover:border-primary hover:shadow-md active:scale-95 transition text-center group"
                   >
-                    <div className="w-full aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-6xl mb-2">
+                    <div className="w-full aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-5xl mb-2">
                       {item.icon || "☕"}
                     </div>
-                    <div className="font-extrabold text-lg sm:text-xl leading-tight truncate w-full" title={item.name}>{item.name}</div>
-                    <div className="text-lg sm:text-xl text-primary font-extrabold leading-tight">{formatVND(item.price)}</div>
+                    <div className="font-bold text-sm sm:text-base leading-tight truncate w-full" title={item.name}>{item.name}</div>
+                    <div className="text-sm sm:text-base text-primary font-bold leading-tight">{formatVND(item.price)}</div>
                   </button>
                 ))}
               </div>
