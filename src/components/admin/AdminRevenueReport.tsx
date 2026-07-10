@@ -205,40 +205,40 @@ export default function AdminRevenueReport() {
       </Tabs>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-              <DollarSign className="h-4 w-4" /> {stats.label}
+          <CardContent className="pt-3 pb-3">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-0.5">
+              <DollarSign className="h-3 w-3" /> {stats.label}
             </div>
-            <div className="text-xl font-bold">{formatVND(stats.currentRevenue)}</div>
+            <div className="text-sm font-bold">{formatVND(stats.currentRevenue)}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-              <DollarSign className="h-4 w-4" /> {stats.prevLabel}
+          <CardContent className="pt-3 pb-3">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-0.5">
+              <DollarSign className="h-3 w-3" /> {stats.prevLabel}
             </div>
-            <div className="text-xl font-bold">{formatVND(stats.prevRevenue)}</div>
+            <div className="text-sm font-bold">{formatVND(stats.prevRevenue)}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-              {stats.change >= 0 ? <TrendingUp className="h-4 w-4 text-green-600" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
+          <CardContent className="pt-3 pb-3">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-0.5">
+              {stats.change >= 0 ? <TrendingUp className="h-3 w-3 text-green-600" /> : <TrendingDown className="h-3 w-3 text-destructive" />}
               So sánh
             </div>
-            <div className={`text-xl font-bold ${stats.change >= 0 ? "text-green-600" : "text-destructive"}`}>
+            <div className={`text-sm font-bold ${stats.change >= 0 ? "text-green-600" : "text-destructive"}`}>
               {stats.change >= 0 ? "+" : ""}{stats.change.toFixed(1)}%
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-              <ShoppingCart className="h-4 w-4" /> Đơn hàng
+          <CardContent className="pt-3 pb-3">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-0.5">
+              <ShoppingCart className="h-3 w-3" /> Đơn hàng
             </div>
-            <div className="text-xl font-bold">{stats.currentCount} <span className="text-xs text-muted-foreground font-normal block sm:inline">({stats.prevCount} trước)</span></div>
+            <div className="text-sm font-bold">{stats.currentCount} <span className="text-[10px] text-muted-foreground font-normal block sm:inline">({stats.prevCount} trước)</span></div>
           </CardContent>
         </Card>
       </div>
