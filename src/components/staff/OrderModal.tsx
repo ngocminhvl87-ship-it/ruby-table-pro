@@ -369,7 +369,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                     onClick={() => addToCart(item.id)}
                     className="flex flex-col items-center p-2.5 rounded-xl bg-card border hover:border-primary hover:shadow-md active:scale-95 transition text-center group"
                   >
-                    <div className="w-full aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-5xl mb-2">
+                    <div className="w-1/2 aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-2xl mb-2">
                       {item.icon || "☕"}
                     </div>
                     <div className="font-bold text-sm sm:text-base leading-tight w-full break-words whitespace-normal">{item.name}</div>
