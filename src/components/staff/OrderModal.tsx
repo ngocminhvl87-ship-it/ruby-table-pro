@@ -372,7 +372,7 @@ export default function OrderModal({ table, order, onClose, onRefresh }: OrderMo
                     <div className="w-full aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center text-5xl mb-2">
                       {item.icon || "☕"}
                     </div>
-                    <div className="font-bold text-sm sm:text-base leading-tight truncate w-full" title={item.name}>{item.name}</div>
+                    <div className="font-bold text-sm sm:text-base leading-tight w-full break-words whitespace-normal">{item.name}</div>
                     <div className="text-sm sm:text-base text-primary font-bold leading-tight">{formatVND(item.price)}</div>
                   </button>
                 ))}
