@@ -44,30 +44,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setUser(session.user);
-        fetchRoleAndProfile(session.user.id);
+    // Khôi phục phiên khi mở lại app; nếu token hết hạn thì thử refresh một lần
+    // (Supabase autoRefreshToken sẽ tự lo việc gia hạn sau đó — KHÔNG gọi refreshSession thủ công
+    // ở nơi khác vì refresh token chỉ dùng được 1 lần, gọi trùng sẽ làm mất phiên).
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      let finalSession = session;
+      if (!finalSession?.user) {
+        const { data } = await supabase.auth.refreshSession().catch(() => ({ data: { session: null } }));
+        finalSession = data?.session ?? null;
+      }
+      if (finalSession?.user) {
+        setUser(finalSession.user);
+        fetchRoleAndProfile(finalSession.user.id);
       }
       setLoading(false);
     });
 
-    // Giữ phiên đăng nhập sống khi quay lại tab/app
-    const onFocus = () => {
-      if (document.visibilityState === "visible") {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-          if (!session) return;
-          supabase.auth.refreshSession().catch(() => {});
-        });
-      }
-    };
-    document.addEventListener("visibilitychange", onFocus);
-    window.addEventListener("focus", onFocus);
-
     return () => {
       subscription.unsubscribe();
-      document.removeEventListener("visibilitychange", onFocus);
-      window.removeEventListener("focus", onFocus);
     };
   }, []);
 
