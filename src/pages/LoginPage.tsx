@@ -9,9 +9,9 @@ import { Coffee } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => localStorage.getItem("cr_last_username") || "");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
+  const [remember, setRemember] = useState(() => localStorage.getItem("cr_remember") !== "0");
   const [isLoading, setIsLoading] = useState(false);
   const { signIn } = useAuth();
   const { toast } = useToast();
@@ -29,6 +29,11 @@ export default function LoginPage() {
     }
 
     const { error } = await signIn(loginEmail, password);
+    if (!error) {
+      localStorage.setItem("cr_remember", remember ? "1" : "0");
+      if (remember) localStorage.setItem("cr_last_username", email);
+      else localStorage.removeItem("cr_last_username");
+    }
     if (error) {
       toast({ title: "Đăng nhập thất bại", description: error.message, variant: "destructive" });
     }
